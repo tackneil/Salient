@@ -1,6 +1,6 @@
 # ADR-0006: Transport of images and feature data
 
-- Status: Accepted
+- Status: Accepted (amended 2026-10-20, before implementation, to align with the design mockup)
 - Date: 2026-10-20
 
 ## Context
@@ -21,8 +21,11 @@ Sending raw float arrays to the browser is slow and moves image processing into 
   - pyramid layers are grayscale.
   
   Layers are served from `GET /api/runs/{id}/layers/{layerId}` with long-lived cache headers, because layer content is immutable for a given run. The run result lists the available layers and their legends (min, max, colormap).
-- **Keypoints:** a JSON array of compact objects (`x`, `y`, `scale`, `angle`, `response`, `octave`, `edgeRatio`) from `GET /api/runs/{id}/keypoints`. Thresholds and octave filters are applied on the client to the full candidate set, so the sliders update instantly without a new run.
+- **Keypoints:** a JSON array of compact objects (`x`, `y`, `scale`, `angle`, `response`, `octave`, `contrast`, `edgeRatio`) from `GET /api/runs/{id}/keypoints`.
+  - Interactive runs use the permissive thresholds described in ADR-0003, so this array is the full candidate set.
+  - Thresholds and octave filters are applied on the client, so the sliders and their survival histograms update instantly without a new run.
 - **Descriptors and orientation histograms:** fetched lazily for one keypoint at a time with `GET /api/runs/{id}/keypoints/{index}`, when the inspector opens.
+- **Heatmaps:** the DoG response, gradient magnitude, contrast and edge-ratio maps (ADR-0004) are rendered like other image layers, each with its legend.
 - **Matches:** a JSON array of index pairs plus the ratio and an inlier flag. The homography is returned as a 3×3 array.
 - Response compression (Brotli) is enabled for JSON.
 

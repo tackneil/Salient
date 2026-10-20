@@ -2,7 +2,13 @@
 
   <PropertyGroup>
     <Description>Salient's own implementation of the SIFT detector and descriptor (Lowe, 2004).</Description>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Salient.Features.Sift.Tests" />
+    <InternalsVisibleTo Include="Salient.Benchmarks" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Salient.Core\Salient.Core.csproj" />

@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <Description>Feature algorithm contracts for Salient: detectors, descriptor extractors, keypoints and parameter schemas.</Description>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

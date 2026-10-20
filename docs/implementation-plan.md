@@ -51,13 +51,25 @@ One class per stage, matching the stage ids in ADR-0004.
 | `contrast` | `ContrastFilter` | Reject when \|D(x̂)\| < threshold, with threshold 0.04 / s in [0, 1] intensity units (OpenCV convention), exposed as the user-facing 0.04. |
 | `edge` | `EdgeFilter` | Reject when det(H) ≤ 0 **or** tr² / det ≥ (r + 1)² / r. |
 | `orientation` | `OrientationAssigner` | 36-bin histogram, Gaussian window 1.5σ, smoothing, every peak ≥ 80% becomes a keypoint, parabolic peak interpolation. |
+| `heatmaps` | `HeatmapBuilder` | Only with `Detail == Full`. Builds the DoG response, gradient magnitude, contrast and edge-ratio maps at input resolution (ADR-0004). |
 
 **Tasks**
-- The parameter record `SiftParameters` with attributes (ADR-0003): octaves, layers, σ₀, contrast threshold, edge threshold, upsample flag.
+- Contracts in `Salient.Features` (ADR-0003, ADR-0004):
+  - `DetectionResult`, `DetectionOptions` and `KeypointDiagnostics`;
+  - `IPipelineObserver` with candidate-set, image-layer and heatmap artifacts.
+- The parameter record `SiftParameters` with attributes (ADR-0003): octaves, layers, σ₀, contrast threshold, edge threshold, upsample flag. Add a `Permissive` helper that sets the thresholds to the slider extremes used by exploration runs.
+- Diagnostics per keypoint: contrast in threshold units (|D(x̂)| · s), edge ratio and the 36-bin orientation histogram.
 - `IPipelineObserver` reporting with the three detail levels.
-- Synthetic tests: a single Gaussian blob, a pure edge, a checkerboard corner, and DoG sign (ADR-0012).
+- Synthetic tests (ADR-0012):
+  - a single Gaussian blob gives the right position and scale;
+  - a sub-pixel-shifted blob is localized to its sub-pixel position;
+  - a straight edge yields candidates that are all removed by edge rejection;
+  - the DoG has the right sign;
+  - pyramid layers have the intended blur (incremental σ);
+  - a 90° image rotation shifts the orientation by 90°;
+  - diagnostics reproduce the thresholds exactly.
 
-**Done when** the synthetic tests pass, and the detector runs on `samples/shuttle.jpg` with a keypoint count within ±20% of OpenCV for equivalent parameters.
+**Done when** the synthetic tests pass, and the detector runs on the sample image with a keypoint count within ±20% of OpenCV for equivalent parameters.
 
 ## Phase 3 — SIFT descriptor and the OpenCV reference
 
@@ -163,6 +175,24 @@ Build each view to match its artboard in the mockup.
 **Done when** `docker compose up` gives a working app on a clean machine and CI builds the image. **This completes milestone M4.**
 
 ---
+
+## Design coverage
+
+Which data each part of the design mockup needs, and which phase provides it.
+
+| Screen / element | Data | Provided by |
+|------------------|------|-------------|
+| Detector: keypoint overlay, octave filter | Keypoints (position, scale, angle, octave) | Phase 2 |
+| Detector: contrast and edge sliders with survival histograms | Exploration run with permissive thresholds; per-keypoint `Contrast` and `EdgeRatio` | Phase 2 (data), Phase 6 (exploration run), Phase 8 (client filtering) |
+| Detector: heatmaps (DoG, gradient, edge ratio, contrast) | Heatmap artifacts | Phase 2 (maps), Phase 6 (rendering) |
+| Detector: keypoint inspector | Contrast, edge ratio, orientation histogram; descriptor; patch | Phase 2 (diagnostics), Phase 3 (descriptor), Phase 6 (per-keypoint endpoint) |
+| Detector: run strip, timing waterfall | Stage events and durations | Phase 2 (observer), Phase 6 (SignalR) |
+| Pipeline: pyramid and DoG tiles | Image layer artifacts | Phase 2 |
+| Pipeline: kept and rejected per stage, funnel | Candidate set artifacts, stage summaries | Phase 2 |
+| Pipeline: descriptor windows, "Show code" | Descriptor stage; one class per stage | Phase 3 |
+| Matching | Matches, ratios, inlier flags, homography | Phase 4 |
+| Robustness | Sweep curves (repeatability, matching score) | Phase 5 |
+| Compare with OpenCV | Reference keypoints, repeatability, timings | Phase 3 (reference), Phase 6 (endpoint) |
 
 ## Parallel work
 
