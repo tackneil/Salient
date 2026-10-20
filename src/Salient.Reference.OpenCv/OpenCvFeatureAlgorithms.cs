@@ -68,21 +68,28 @@ public abstract class OpenCvFeatureAlgorithm<TParameters> : IFeatureDetector<TPa
         return new DetectionResult(keypoints, null);
     }
 
-    /// <summary>Detects and describes in one OpenCV call.</summary>
+    /// <summary>Detects and describes in one OpenCV call, reported as the single stage <see cref="StageId"/>.</summary>
     public (DetectionResult Detection, DescriptorSet Descriptors) DetectAndCompute(
         ImageF image,
         TParameters parameters,
+        IPipelineObserver? observer = null,
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(image);
         ArgumentNullException.ThrowIfNull(parameters);
         cancellationToken.ThrowIfCancellationRequested();
-        using var mat = OpenCvConversions.ToMat(image);
-        using var algorithm = Create(parameters);
-        using var descriptors = new Mat();
-        algorithm.DetectAndCompute(mat, null, out var cvKeypoints, descriptors);
-        var keypoints = cvKeypoints.Select(k => OpenCvConversions.ToKeypoint(k, PackedSiftOctave)).ToList();
-        return (new DetectionResult(keypoints, null), OpenCvConversions.ToDescriptorSet(descriptors, keypoints));
+        return new PipelineReporter(observer).Run(
+            StageId,
+            () =>
+            {
+                using var mat = OpenCvConversions.ToMat(image);
+                using var algorithm = Create(parameters);
+                using var descriptors = new Mat();
+                algorithm.DetectAndCompute(mat, null, out var cvKeypoints, descriptors);
+                var keypoints = cvKeypoints.Select(k => OpenCvConversions.ToKeypoint(k, PackedSiftOctave)).ToList();
+                return (new DetectionResult(keypoints, null), OpenCvConversions.ToDescriptorSet(descriptors, keypoints));
+            },
+            r => new StageSummary(r.Item1.Keypoints.Count, r.Item1.Keypoints.Count, 0));
     }
 
     /// <inheritdoc />

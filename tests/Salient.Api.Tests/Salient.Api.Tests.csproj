@@ -2,10 +2,16 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Salient.Api\Salient.Api.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\Salient.Features.Sift.Tests\SyntheticImages.cs" Link="Shared\SyntheticImages.cs" />
+    <Compile Include="..\Salient.Features.Sift.Tests\GoldenScene.cs" Link="Shared\GoldenScene.cs" />
   </ItemGroup>
 
 </Project>

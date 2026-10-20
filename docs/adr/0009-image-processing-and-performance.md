@@ -9,8 +9,8 @@ SIFT is dominated by Gaussian convolutions over float images. The coursework imp
 
 ## Decision
 
-- **Image I/O:** SixLabors.ImageSharp decodes uploads and encodes WebP layers. It is used only at the boundaries (in `Salient.Api`), never inside algorithm code.
-  - ImageSharp is under the Six Labors Split License: free for open-source use, while commercial use above the license's revenue threshold requires a paid license. This must be re-checked if the project's licensing situation changes.
+- **Image I/O:** SkiaSharp (MIT) decodes uploads (PNG, JPEG, WebP, GIF, BMP, with EXIF orientation) and encodes WebP layers. It is used only at the boundaries (in `Salient.Api`, behind `ImageCodec`), never inside algorithm code.
+  - *Amended 2026-10-20 during Phase 6:* the original choice, SixLabors.ImageSharp, was dropped. Version 4.x needs a license key for Release builds, and 3.1.x has published high-severity vulnerabilities. Decoding untrusted uploads is exactly the attack surface those advisories cover. SkiaSharp needs a native library; `SkiaSharp.NativeAssets.Linux.NoDependencies` covers the Docker image.
 - **In-memory representation:** `ImageF` in `Salient.Core`, a single-channel `float[]` with `Width`, `Height` and `Stride`. Intensities are normalized to [0, 1] on load. All thresholds follow Lowe's paper in that range.
 - **Convolution:** separable Gaussian kernels with radius ⌈3σ⌉, mirrored borders, and incremental blurring (σ_inc = √(σ² − σ_prev²)).
 - **Hot loops:**

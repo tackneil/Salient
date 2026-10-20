@@ -10,7 +10,7 @@ Consistent conventions keep a solo portfolio project readable and make it easy f
 ## Decision
 
 - **Language:** all code, identifiers, comments, UI text, commit messages and documentation are in English.
-- **License:** MIT. Third-party licenses (ImageSharp, OpenCV, OpenCvSharp, MUI) are listed in `THIRD-PARTY-NOTICES.md`.
+- **License:** MIT. Third-party licenses (SkiaSharp, OpenCV, OpenCvSharp, MUI) are listed in `THIRD-PARTY-NOTICES.md`.
 - **Branching:** `master` is always releasable. Work happens in short-lived branches merged through pull requests.
 - **Commits:** Conventional Commits (`feat:`, `fix:`, `refactor:`, `test:`, `docs:`, `chore:`), with an optional scope (`feat(sift): ...`).
 - **CI:** GitHub Actions:

@@ -8,7 +8,7 @@ Salient grows out of a 2019 bachelor's coursework project ([SIFTDetector](https:
 
 ## Stack
 
-- **Backend:** .NET 10, ASP.NET Core minimal APIs, SignalR, EF Core + SQLite, ImageSharp
+- **Backend:** .NET 10, ASP.NET Core minimal APIs, SignalR, EF Core + SQLite, SkiaSharp
 - **Algorithms:** own SIFT implementation in C#; OpenCvSharp as an optional reference
 - **Frontend:** React, TypeScript, Vite, MUI, MUI X Charts, TanStack Query, Zustand
 

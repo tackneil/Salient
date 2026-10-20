@@ -106,7 +106,7 @@ One class per stage, matching the stage ids in ADR-0004.
 
 **Tasks**
 - Storage: EF Core with SQLite (`Images`, `Runs`, `RunStages`), `IBlobStore` on the file system, and a retention background service (ADR-0008).
-- Upload endpoint: ImageSharp decode, convert to gray, enforce the 4 MP limit, deduplicate by SHA-256.
+- Upload endpoint: SkiaSharp decode (ADR-0009), convert to gray, enforce the 4 MP limit, deduplicate by SHA-256.
 - Algorithm registry and `GET /api/algorithms` with JSON Schemas generated from the parameter records.
 - Job queue: a bounded `Channel<Job>` with a `BackgroundService` and cancellation. Endpoints:
   - `POST /api/runs`, `GET /api/runs/{id}`, `DELETE /api/runs/{id}`;
