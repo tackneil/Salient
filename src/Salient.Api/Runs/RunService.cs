@@ -95,6 +95,9 @@ public sealed class RunService(
         return await CreateAsync(RunKind.Benchmark, string.Join(',', algorithms.Select(a => a.Descriptor.Id)), request.ImageId, null, normalized, key, cancellationToken);
     }
 
+    /// <summary>Bump when the comparison metrics change, so cached comparisons are recomputed (ADR-0008).</summary>
+    public const int ComparisonVersion = 2;
+
     public async Task<RunCreated> CreateComparisonAsync(ComparisonRequest request, CancellationToken cancellationToken)
     {
         await RequireImageAsync(request.ImageId, cancellationToken);
@@ -105,7 +108,7 @@ public sealed class RunService(
         }
 
         var parameters = sift.Parse(request.Parameters);
-        var key = $"comparison|{request.ImageId}|{sift.Descriptor.Version}|{OpenCvAvailability.Version}|{sift.Canonical(parameters)}";
+        var key = $"comparison|v{ComparisonVersion}|{request.ImageId}|{sift.Descriptor.Version}|{OpenCvAvailability.Version}|{sift.Canonical(parameters)}";
         return await CreateAsync(RunKind.Comparison, "sift", request.ImageId, null, request, key, cancellationToken);
     }
 

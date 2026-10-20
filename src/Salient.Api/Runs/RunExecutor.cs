@@ -215,13 +215,22 @@ public sealed class RunExecutor(AlgorithmRegistry registry, ImageService images,
             }
         }
 
+        // A location can carry several orientations, so pairs prefer the closest angle and then the closest position;
+        // each keypoint is used at most once.
+        static double AngleDifference(float a, float b) => Math.Abs(((a - b + 540) % 360) - 180);
         var offsets = new List<double>();
         var pairedOurs = new HashSet<Keypoint>();
         foreach (var t in theirs)
         {
-            var match = Near(t).Where(o => Same(o, t)).OrderBy(o => ((o.X - t.X) * (o.X - t.X)) + ((o.Y - t.Y) * (o.Y - t.Y))).FirstOrDefault();
-            if (Same(match, t))
+            var candidates = Near(t)
+                .Where(o => Same(o, t) && !pairedOurs.Contains(o))
+                .OrderBy(o => AngleDifference(o.Angle, t.Angle))
+                .ThenBy(o => ((o.X - t.X) * (o.X - t.X)) + ((o.Y - t.Y) * (o.Y - t.Y)))
+                .Take(1)
+                .ToList();
+            if (candidates.Count == 1)
             {
+                var match = candidates[0];
                 offsets.Add(Math.Sqrt(((match.X - t.X) * (match.X - t.X)) + ((match.Y - t.Y) * (match.Y - t.Y))));
                 pairedOurs.Add(match);
             }
