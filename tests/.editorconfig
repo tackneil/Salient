@@ -1,3 +1,6 @@
 [*.cs]
 # Test method names use underscores: Method_Scenario_ExpectedResult.
 dotnet_diagnostic.CA1707.severity = none
+
+# Inline expected-value arrays in assertions are clearer than static fields.
+dotnet_diagnostic.CA1861.severity = none

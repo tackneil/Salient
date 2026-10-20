@@ -3,7 +3,14 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Salient.Core\Salient.Core.csproj" />
     <ProjectReference Include="..\..\src\Salient.Features\Salient.Features.csproj" />
+    <ProjectReference Include="..\..\src\Salient.Features.Sift\Salient.Features.Sift.csproj" />
     <ProjectReference Include="..\..\src\Salient.Matching\Salient.Matching.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Shared synthetic scenes for the end-to-end matching test. -->
+    <Compile Include="..\Salient.Features.Sift.Tests\SyntheticImages.cs" Link="Shared\SyntheticImages.cs" />
+    <Compile Include="..\Salient.Features.Sift.Tests\GoldenScene.cs" Link="Shared\GoldenScene.cs" />
   </ItemGroup>
 
 </Project>

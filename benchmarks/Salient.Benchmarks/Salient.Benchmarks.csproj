@@ -13,6 +13,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Salient.Core\Salient.Core.csproj" />
     <ProjectReference Include="..\..\src\Salient.Features.Sift\Salient.Features.Sift.csproj" />
+    <ProjectReference Include="..\..\src\Salient.Matching\Salient.Matching.csproj" />
   </ItemGroup>
 
 </Project>

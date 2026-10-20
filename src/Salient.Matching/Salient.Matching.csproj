@@ -1,8 +1,13 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <Description>Descriptor matching for Salient: brute-force k-NN, ratio test, RANSAC and homography estimation.</Description>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Salient.Matching.Tests" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Salient.Core\Salient.Core.csproj" />
