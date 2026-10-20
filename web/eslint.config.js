@@ -26,5 +26,9 @@ export default defineConfig([
         tsconfigRootDir: import.meta.dirname,
       },
     },
+    rules: {
+      // Numbers in template literals are common in UI labels and unambiguous.
+      '@typescript-eslint/restrict-template-expressions': ['error', { allowNumber: true }],
+    },
   },
 ])

@@ -1,0 +1,1778 @@
+{
+  "openapi": "3.1.1",
+  "info": {
+    "title": "Salient.Api | v1",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/algorithms": {
+      "get": {
+        "tags": [
+          "Algorithms"
+        ],
+        "operationId": "ListAlgorithms",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AlgorithmInfo"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/matches": {
+      "post": {
+        "tags": [
+          "Runs"
+        ],
+        "operationId": "CreateMatchingRun",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MatchingRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": "Accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunCreated"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunCreated"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/benchmarks": {
+      "post": {
+        "tags": [
+          "Runs"
+        ],
+        "operationId": "CreateBenchmarkRun",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BenchmarkRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": "Accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunCreated"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunCreated"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/comparisons": {
+      "post": {
+        "tags": [
+          "Runs"
+        ],
+        "operationId": "CreateComparisonRun",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ComparisonRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": "Accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunCreated"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunCreated"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/images": {
+      "post": {
+        "tags": [
+          "Images"
+        ],
+        "operationId": "UploadImage",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "required": [
+                  "file"
+                ],
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "$ref": "#/components/schemas/IFormFile"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImageInfo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/images/{id}": {
+      "get": {
+        "tags": [
+          "Images"
+        ],
+        "operationId": "GetImage",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImageInfo"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/api/images/{id}/content": {
+      "get": {
+        "tags": [
+          "Images"
+        ],
+        "operationId": "GetImageContent",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/runs": {
+      "post": {
+        "tags": [
+          "Runs"
+        ],
+        "operationId": "CreateDetectionRun",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DetectionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": "Accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunCreated"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunCreated"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/runs/{id}": {
+      "get": {
+        "tags": [
+          "Runs"
+        ],
+        "operationId": "GetRun",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunInfo"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Runs"
+        ],
+        "operationId": "CancelRun",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Accepted"
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/runs/{id}/detection": {
+      "get": {
+        "tags": [
+          "Runs"
+        ],
+        "operationId": "GetDetectionResult",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DetectionResultDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/api/runs/{id}/keypoints/{index}": {
+      "get": {
+        "tags": [
+          "Runs"
+        ],
+        "operationId": "GetKeypoint",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "index",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KeypointDetail"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/api/runs/{id}/candidates/{stageId}": {
+      "get": {
+        "tags": [
+          "Runs"
+        ],
+        "operationId": "GetStageCandidates",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "stageId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CandidateDto"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/api/runs/{id}/layers/{layerId}": {
+      "get": {
+        "tags": [
+          "Runs"
+        ],
+        "operationId": "GetLayer",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "layerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/runs/{id}/matching": {
+      "get": {
+        "tags": [
+          "Runs"
+        ],
+        "operationId": "GetMatchingResult",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MatchingResultDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/api/runs/{id}/benchmark": {
+      "get": {
+        "tags": [
+          "Runs"
+        ],
+        "operationId": "GetBenchmarkResult",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BenchmarkResultDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/api/runs/{id}/comparison": {
+      "get": {
+        "tags": [
+          "Runs"
+        ],
+        "operationId": "GetComparisonResult",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ComparisonResultDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AlgorithmInfo": {
+        "required": [
+          "id",
+          "displayName",
+          "family",
+          "capabilities",
+          "version",
+          "parameterSchema"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "displayName": {
+            "type": "string"
+          },
+          "family": {
+            "type": "string"
+          },
+          "capabilities": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "version": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "parameterSchema": {
+            "$ref": "#/components/schemas/JsonObject"
+          }
+        }
+      },
+      "BenchmarkRequest": {
+        "required": [
+          "imageId",
+          "algorithmIds",
+          "families"
+        ],
+        "type": "object",
+        "properties": {
+          "imageId": {
+            "type": "string"
+          },
+          "algorithmIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "families": {
+            "type": [
+              "null",
+              "object"
+            ],
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "number",
+                "format": "double"
+              }
+            }
+          }
+        }
+      },
+      "BenchmarkResultDto": {
+        "required": [
+          "families"
+        ],
+        "type": "object",
+        "properties": {
+          "families": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SweepResult"
+            }
+          }
+        }
+      },
+      "CandidateDto": {
+        "required": [
+          "x",
+          "y",
+          "scale",
+          "octave",
+          "contrast",
+          "edgeRatio",
+          "rejection"
+        ],
+        "type": "object",
+        "properties": {
+          "x": {
+            "type": "number",
+            "format": "float"
+          },
+          "y": {
+            "type": "number",
+            "format": "float"
+          },
+          "scale": {
+            "type": "number",
+            "format": "float"
+          },
+          "octave": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "contrast": {
+            "type": [
+              "null",
+              "number"
+            ],
+            "format": "float"
+          },
+          "edgeRatio": {
+            "type": [
+              "null",
+              "number"
+            ],
+            "format": "float"
+          },
+          "rejection": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "ComparisonRequest": {
+        "required": [
+          "imageId",
+          "parameters"
+        ],
+        "type": "object",
+        "properties": {
+          "imageId": {
+            "type": "string"
+          },
+          "parameters": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/JsonElement"
+              }
+            ]
+          }
+        }
+      },
+      "ComparisonResultDto": {
+        "required": [
+          "salient",
+          "reference",
+          "salientMs",
+          "referenceMs",
+          "repeatability",
+          "onlySalient",
+          "onlyReference",
+          "meanOffset"
+        ],
+        "type": "object",
+        "properties": {
+          "salient": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PointDto"
+            }
+          },
+          "reference": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PointDto"
+            }
+          },
+          "salientMs": {
+            "type": "number",
+            "format": "double"
+          },
+          "referenceMs": {
+            "type": "number",
+            "format": "double"
+          },
+          "repeatability": {
+            "type": "number",
+            "format": "double"
+          },
+          "onlySalient": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "onlyReference": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "meanOffset": {
+            "type": "number",
+            "format": "double"
+          }
+        }
+      },
+      "DescriptorInfo": {
+        "required": [
+          "kind",
+          "dimension"
+        ],
+        "type": "object",
+        "properties": {
+          "kind": {
+            "$ref": "#/components/schemas/DescriptorKind"
+          },
+          "dimension": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "DescriptorKind": {
+        "enum": [
+          "real",
+          "binary"
+        ],
+        "description": "How descriptor values are stored and compared."
+      },
+      "DetectionRequest": {
+        "required": [
+          "imageId",
+          "algorithmId",
+          "parameters"
+        ],
+        "type": "object",
+        "properties": {
+          "imageId": {
+            "type": "string"
+          },
+          "algorithmId": {
+            "type": "string"
+          },
+          "parameters": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/JsonElement"
+              }
+            ]
+          }
+        }
+      },
+      "DetectionResultDto": {
+        "required": [
+          "width",
+          "height",
+          "parameters",
+          "explorationParameters",
+          "descriptor",
+          "keypoints"
+        ],
+        "type": "object",
+        "properties": {
+          "width": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "height": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "parameters": {
+            "$ref": "#/components/schemas/JsonElement"
+          },
+          "explorationParameters": {
+            "$ref": "#/components/schemas/JsonElement"
+          },
+          "descriptor": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/DescriptorInfo"
+              }
+            ]
+          },
+          "keypoints": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/KeypointDto"
+            }
+          }
+        }
+      },
+      "HttpValidationProblemDetails": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "title": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "status": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "format": "int32"
+          },
+          "detail": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "instance": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "errors": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "IFormFile": {
+        "type": "string",
+        "format": "binary"
+      },
+      "ImageInfo": {
+        "required": [
+          "id",
+          "width",
+          "height",
+          "originalWidth",
+          "originalHeight",
+          "fileName"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "width": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "height": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "originalWidth": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "originalHeight": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "fileName": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "JsonElement": { },
+      "JsonObject": {
+        "type": "object"
+      },
+      "KeypointDetail": {
+        "required": [
+          "index",
+          "keypoint",
+          "orientationHistogram",
+          "descriptor",
+          "binaryDescriptor"
+        ],
+        "type": "object",
+        "properties": {
+          "index": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "keypoint": {
+            "$ref": "#/components/schemas/KeypointDto"
+          },
+          "orientationHistogram": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "number",
+              "format": "float"
+            }
+          },
+          "descriptor": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "number",
+              "format": "float"
+            }
+          },
+          "binaryDescriptor": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "integer",
+              "format": "uint8"
+            }
+          }
+        }
+      },
+      "KeypointDto": {
+        "required": [
+          "x",
+          "y",
+          "scale",
+          "angle",
+          "response",
+          "octave",
+          "contrast",
+          "edgeRatio"
+        ],
+        "type": "object",
+        "properties": {
+          "x": {
+            "type": "number",
+            "format": "float"
+          },
+          "y": {
+            "type": "number",
+            "format": "float"
+          },
+          "scale": {
+            "type": "number",
+            "format": "float"
+          },
+          "angle": {
+            "type": "number",
+            "format": "float"
+          },
+          "response": {
+            "type": "number",
+            "format": "float"
+          },
+          "octave": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "contrast": {
+            "type": [
+              "null",
+              "number"
+            ],
+            "format": "float"
+          },
+          "edgeRatio": {
+            "type": [
+              "null",
+              "number"
+            ],
+            "format": "float"
+          }
+        }
+      },
+      "LayerInfo": {
+        "required": [
+          "id",
+          "kind",
+          "name",
+          "octave",
+          "layer",
+          "sigma",
+          "width",
+          "height",
+          "legend"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "octave": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "format": "int32"
+          },
+          "layer": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "format": "int32"
+          },
+          "sigma": {
+            "type": "number",
+            "format": "double"
+          },
+          "width": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "height": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "legend": {
+            "$ref": "#/components/schemas/LayerLegend"
+          }
+        }
+      },
+      "LayerLegend": {
+        "required": [
+          "colormap",
+          "min",
+          "max"
+        ],
+        "type": "object",
+        "properties": {
+          "colormap": {
+            "type": "string"
+          },
+          "min": {
+            "type": "number",
+            "format": "double"
+          },
+          "max": {
+            "type": "number",
+            "format": "double"
+          },
+          "scale": {
+            "type": "string",
+            "default": "linear"
+          }
+        }
+      },
+      "MatchDto": {
+        "required": [
+          "a",
+          "b",
+          "distance",
+          "ratio",
+          "inlier"
+        ],
+        "type": "object",
+        "properties": {
+          "a": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "b": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "distance": {
+            "type": "number",
+            "format": "float"
+          },
+          "ratio": {
+            "type": "number",
+            "format": "float"
+          },
+          "inlier": {
+            "type": "boolean"
+          }
+        }
+      },
+      "MatchingRequest": {
+        "required": [
+          "imageA",
+          "imageB",
+          "algorithmId",
+          "parameters"
+        ],
+        "type": "object",
+        "properties": {
+          "imageA": {
+            "type": "string"
+          },
+          "imageB": {
+            "type": "string"
+          },
+          "algorithmId": {
+            "type": "string"
+          },
+          "parameters": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/JsonElement"
+              }
+            ]
+          },
+          "ratio": {
+            "type": "number",
+            "format": "double",
+            "default": 0.8
+          },
+          "ransacThreshold": {
+            "type": "number",
+            "format": "double",
+            "default": 3
+          }
+        }
+      },
+      "MatchingResultDto": {
+        "required": [
+          "widthA",
+          "heightA",
+          "widthB",
+          "heightB",
+          "keypointsA",
+          "keypointsB",
+          "matches",
+          "ratio",
+          "ransacThreshold",
+          "homography",
+          "rotationDegrees",
+          "scale",
+          "inlierCount"
+        ],
+        "type": "object",
+        "properties": {
+          "widthA": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "heightA": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "widthB": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "heightB": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "keypointsA": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PointDto"
+            }
+          },
+          "keypointsB": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PointDto"
+            }
+          },
+          "matches": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MatchDto"
+            }
+          },
+          "ratio": {
+            "type": "number",
+            "format": "double"
+          },
+          "ransacThreshold": {
+            "type": "number",
+            "format": "double"
+          },
+          "homography": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          "rotationDegrees": {
+            "type": [
+              "null",
+              "number"
+            ],
+            "format": "double"
+          },
+          "scale": {
+            "type": [
+              "null",
+              "number"
+            ],
+            "format": "double"
+          },
+          "inlierCount": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "PairMetrics": {
+        "required": [
+          "repeatability",
+          "matchingScore",
+          "matchPrecision",
+          "referenceKeypoints",
+          "transformedKeypoints",
+          "matches",
+          "correctMatches"
+        ],
+        "type": "object",
+        "properties": {
+          "repeatability": {
+            "type": "number",
+            "description": "Fraction of keypoints, among those visible in both images, that are re-detected: within the position tolerance after\r\nmapping and at a consistent scale. Divided by the smaller visible count, so it lies in [0, 1].",
+            "format": "double"
+          },
+          "matchingScore": {
+            "type": "number",
+            "description": "Correct ratio-test matches divided by the reference keypoints visible in the transformed image.",
+            "format": "double"
+          },
+          "matchPrecision": {
+            "type": "number",
+            "description": "Correct matches divided by all ratio-test matches; 0 when there are no matches.",
+            "format": "double"
+          },
+          "referenceKeypoints": {
+            "type": "integer",
+            "description": "Keypoints in the reference image.",
+            "format": "int32"
+          },
+          "transformedKeypoints": {
+            "type": "integer",
+            "description": "Keypoints in the transformed image.",
+            "format": "int32"
+          },
+          "matches": {
+            "type": "integer",
+            "description": "Matches after the ratio test.",
+            "format": "int32"
+          },
+          "correctMatches": {
+            "type": "integer",
+            "description": "Matches whose keypoints agree with the ground truth within the position tolerance.",
+            "format": "int32"
+          }
+        },
+        "description": "Measurements for one reference/transformed image pair."
+      },
+      "PointDto": {
+        "required": [
+          "x",
+          "y",
+          "scale",
+          "angle"
+        ],
+        "type": "object",
+        "properties": {
+          "x": {
+            "type": "number",
+            "format": "float"
+          },
+          "y": {
+            "type": "number",
+            "format": "float"
+          },
+          "scale": {
+            "type": "number",
+            "format": "float"
+          },
+          "angle": {
+            "type": "number",
+            "format": "float"
+          }
+        }
+      },
+      "ProblemDetails": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "title": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "status": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "format": "int32"
+          },
+          "detail": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "instance": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "RunCreated": {
+        "required": [
+          "runId",
+          "status",
+          "cached"
+        ],
+        "type": "object",
+        "properties": {
+          "runId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "$ref": "#/components/schemas/RunStatus"
+          },
+          "cached": {
+            "type": "boolean"
+          }
+        }
+      },
+      "RunInfo": {
+        "required": [
+          "id",
+          "kind",
+          "status",
+          "algorithmId",
+          "imageId",
+          "secondImageId",
+          "createdAt",
+          "durationMs",
+          "error",
+          "stages",
+          "layers",
+          "progress"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/RunKind"
+          },
+          "status": {
+            "$ref": "#/components/schemas/RunStatus"
+          },
+          "algorithmId": {
+            "type": "string"
+          },
+          "imageId": {
+            "type": "string"
+          },
+          "secondImageId": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "durationMs": {
+            "type": [
+              "null",
+              "number"
+            ],
+            "format": "double"
+          },
+          "error": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "stages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StageInfo"
+            }
+          },
+          "layers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LayerInfo"
+            }
+          },
+          "progress": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/RunProgress"
+              }
+            ]
+          }
+        }
+      },
+      "RunKind": {
+        "enum": [
+          "detection",
+          "matching",
+          "benchmark",
+          "comparison"
+        ]
+      },
+      "RunProgress": {
+        "required": [
+          "completed",
+          "total",
+          "message"
+        ],
+        "type": "object",
+        "properties": {
+          "completed": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "total": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "message": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "RunStatus": {
+        "enum": [
+          "queued",
+          "running",
+          "completed",
+          "failed",
+          "canceled"
+        ]
+      },
+      "StageInfo": {
+        "required": [
+          "id",
+          "state",
+          "durationMs",
+          "input",
+          "kept",
+          "rejected"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "state": {
+            "$ref": "#/components/schemas/StageState"
+          },
+          "durationMs": {
+            "type": [
+              "null",
+              "number"
+            ],
+            "format": "double"
+          },
+          "input": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "kept": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "rejected": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "StageState": {
+        "enum": [
+          "running",
+          "completed"
+        ]
+      },
+      "SweepPoint": {
+        "required": [
+          "value",
+          "metrics"
+        ],
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "number",
+            "description": "Transformation value, for example the angle.",
+            "format": "double"
+          },
+          "metrics": {
+            "description": "Metrics at that value.",
+            "$ref": "#/components/schemas/PairMetrics"
+          }
+        },
+        "description": "One measured point of a curve."
+      },
+      "SweepResult": {
+        "required": [
+          "family",
+          "values",
+          "series"
+        ],
+        "type": "object",
+        "properties": {
+          "family": {
+            "description": "Swept family.",
+            "$ref": "#/components/schemas/TransformationFamily"
+          },
+          "values": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "description": "Swept values."
+          },
+          "series": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SweepSeries"
+            },
+            "description": "One series per extractor."
+          }
+        },
+        "description": "All curves for one transformation family."
+      },
+      "SweepSeries": {
+        "required": [
+          "extractorId",
+          "displayName",
+          "points"
+        ],
+        "type": "object",
+        "properties": {
+          "extractorId": {
+            "type": "string",
+            "description": "Extractor identifier."
+          },
+          "displayName": {
+            "type": "string",
+            "description": "Extractor display name."
+          },
+          "points": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SweepPoint"
+            },
+            "description": "Measurements in the order of the swept values."
+          }
+        },
+        "description": "The curve of one extractor over one family."
+      },
+      "TransformationFamily": {
+        "enum": [
+          "rotation",
+          "scale",
+          "blur",
+          "noise",
+          "brightness"
+        ],
+        "description": "A family of image transformations swept by the robustness bench."
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Algorithms"
+    },
+    {
+      "name": "Runs"
+    },
+    {
+      "name": "Images"
+    }
+  ]
+}

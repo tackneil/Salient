@@ -49,8 +49,13 @@ builder.Services.AddHostedService<RetentionService>();
 
 var app = builder.Build();
 
-await using (var db = await app.Services.GetRequiredService<IDbContextFactory<SalientDbContext>>().CreateDbContextAsync())
+// The build-time OpenAPI generator starts the app only to read endpoint metadata; it must not touch storage.
+var generatingOpenApi = System.Reflection.Assembly.GetEntryAssembly()?.GetName().Name == "GetDocument.Insider";
+if (!generatingOpenApi)
 {
+    app.Services.GetRequiredService<BlobStore>().EnsureRoot();
+    await using var db = await app.Services.GetRequiredService<IDbContextFactory<SalientDbContext>>().CreateDbContextAsync();
+
     // v1 creates the schema directly; switch to EF migrations before the schema needs to evolve with data in place.
     await db.Database.EnsureCreatedAsync();
 }

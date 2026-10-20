@@ -13,11 +13,13 @@ public sealed class BlobStore
     {
         var root = options.Value.StorageRoot;
         _root = Path.GetFullPath(Path.IsPathRooted(root) ? root : Path.Combine(environment.ContentRootPath, root));
-        Directory.CreateDirectory(_root);
     }
 
-    /// <summary>Absolute storage root; the SQLite database lives here too.</summary>
+    /// <summary>Absolute storage root; the SQLite database lives here too. Created on first use.</summary>
     public string Root => _root;
+
+    /// <summary>Creates the storage root if it does not exist.</summary>
+    public void EnsureRoot() => Directory.CreateDirectory(_root);
 
     public bool Exists(string path) => File.Exists(Resolve(path));
 
