@@ -45,7 +45,7 @@ public sealed record DetectionOptions(bool IncludeDiagnostics);
 - `Angle` is in degrees, counterclockwise as seen on screen, in [0, 360). OpenCV stores the clockwise angle; adapters convert it with `360 − angle`.
 - `Response` is the detector's strength. For SIFT it is |D(x̂)|, with intensities normalized to [0, 1], the same as OpenCV's `response`.
 - `Octave` and `Layer` are integers.
-- Descriptors are stored as `float[]`, or `byte[]` for binary descriptors, with a declared `DescriptorKind` (`Float` or `Binary`). The matcher uses the kind to choose L2 or Hamming distance.
+- Descriptors are stored as `float[]`, or `byte[]` for binary descriptors, with a declared `DescriptorKind` (`Real` or `Binary`). The matcher uses the kind to choose L2 or Hamming distance.
 
 **Keypoint diagnostics:** an optional list aligned by index with `Keypoints`, returned when `IncludeDiagnostics` is set. Every field is nullable, so each algorithm fills only what it has.
 - `Contrast` is expressed in the same units as the algorithm's contrast-threshold parameter. For SIFT that is |D(x̂)| · s, so a keypoint survives a threshold `t` exactly when `Contrast ≥ t`.

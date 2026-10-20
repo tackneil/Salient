@@ -24,6 +24,9 @@ public static class SiftStages
     /// <summary>Orientation assignment.</summary>
     public const string Orientation = "orientation";
 
+    /// <summary>Descriptor computation.</summary>
+    public const string Descriptor = "descriptor";
+
     /// <summary>Heatmaps for the Detector view; only with full pipeline detail.</summary>
     public const string Heatmaps = "heatmaps";
 }

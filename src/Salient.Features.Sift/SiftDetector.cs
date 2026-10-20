@@ -3,8 +3,8 @@ using Salient.Features.Pipeline;
 
 namespace Salient.Features.Sift;
 
-/// <summary>Salient's own SIFT detector (Lowe 2004). Each stage is a separate class so the UI can link to it.</summary>
-public sealed class SiftDetector : IFeatureDetector<SiftParameters>
+/// <summary>Salient's own SIFT detector and descriptor (Lowe 2004). Each stage is a separate class so the UI can link to it.</summary>
+public sealed class SiftDetector : IFeatureDetector<SiftParameters>, IDescriptorExtractor<SiftParameters>
 {
     /// <summary>Output version; bump whenever results change (ADR-0008).</summary>
     public const int Version = 1;
@@ -14,7 +14,7 @@ public sealed class SiftDetector : IFeatureDetector<SiftParameters>
         "sift",
         "SIFT · Salient",
         "SIFT",
-        AlgorithmCapabilities.Detects | AlgorithmCapabilities.ExposesPipeline,
+        AlgorithmCapabilities.Detects | AlgorithmCapabilities.Describes | AlgorithmCapabilities.ExposesPipeline,
         typeof(SiftParameters),
         Version);
 
@@ -26,11 +26,60 @@ public sealed class SiftDetector : IFeatureDetector<SiftParameters>
         IPipelineObserver? observer = null,
         CancellationToken cancellationToken = default)
     {
+        var reporter = new PipelineReporter(observer);
+        return Detect(image, parameters, options, reporter, cancellationToken).Result;
+    }
+
+    /// <summary>
+    /// Detects keypoints and computes their descriptors in one pass, reusing the Gaussian pyramid.
+    /// Reports the <see cref="SiftStages.Descriptor"/> stage after detection.
+    /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Part of the detector's instance API, next to the interface methods.")]
+    public (DetectionResult Detection, DescriptorSet Descriptors) DetectAndCompute(
+        ImageF image,
+        SiftParameters parameters,
+        DetectionOptions? options = null,
+        IPipelineObserver? observer = null,
+        CancellationToken cancellationToken = default)
+    {
+        var reporter = new PipelineReporter(observer);
+        var (result, scaleSpace) = Detect(image, parameters, options, reporter, cancellationToken);
+        var descriptors = reporter.Run(
+            SiftStages.Descriptor,
+            () => DescriptorSet.FromFloats(
+                result.Keypoints,
+                DescriptorBuilder.Dimension,
+                DescriptorBuilder.ComputeAll(scaleSpace, result.Keypoints, cancellationToken)),
+            d => new StageSummary(result.Keypoints.Count, d.Count, 0));
+        return (result, descriptors);
+    }
+
+    /// <summary>
+    /// Computes descriptors for keypoints, which should come from this detector run with the same scale-space parameters
+    /// (σ₀, layers, upsampling). Keypoints from other detectors are described at the pyramid layer nearest to their scale.
+    /// Descriptors have unit length.
+    /// </summary>
+    public DescriptorSet Compute(ImageF image, IReadOnlyList<Keypoint> keypoints, SiftParameters parameters, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(image);
+        ArgumentNullException.ThrowIfNull(keypoints);
+        ArgumentNullException.ThrowIfNull(parameters);
+        parameters.Validate();
+        var scaleSpace = GaussianPyramid.Build(image, parameters, cancellationToken);
+        return DescriptorSet.FromFloats(keypoints, DescriptorBuilder.Dimension, DescriptorBuilder.ComputeAll(scaleSpace, keypoints, cancellationToken));
+    }
+
+    private static (DetectionResult Result, ScaleSpace ScaleSpace) Detect(
+        ImageF image,
+        SiftParameters parameters,
+        DetectionOptions? options,
+        PipelineReporter reporter,
+        CancellationToken cancellationToken)
+    {
         ArgumentNullException.ThrowIfNull(image);
         ArgumentNullException.ThrowIfNull(parameters);
         parameters.Validate();
         options ??= DetectionOptions.Default;
-        var reporter = new PipelineReporter(observer);
 
         var scaleSpace = reporter.Run(
             SiftStages.GaussianPyramid,
@@ -100,7 +149,7 @@ public sealed class SiftDetector : IFeatureDetector<SiftParameters>
         var diagnostics = options.IncludeDiagnostics
             ? oriented.ConvertAll(o => new KeypointDiagnostics(o.Source.Contrast, o.Source.EdgeRatio, o.Histogram))
             : null;
-        return new DetectionResult(keypoints, diagnostics);
+        return (new DetectionResult(keypoints, diagnostics), scaleSpace);
     }
 
     private static void ReportLayers(PipelineReporter reporter, ScaleSpace scaleSpace, string stage, ImageLayerKind kind)

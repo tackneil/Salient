@@ -2,7 +2,14 @@
 
   <PropertyGroup>
     <Description>OpenCV reference algorithms (SIFT, ORB, AKAZE) exposed through Salient's feature contracts.</Description>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="OpenCvSharp4" />
+    <PackageReference Include="OpenCvSharp4.runtime.win" />
+    <PackageReference Include="OpenCvSharp4.official.runtime.linux-x64" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Salient.Core\Salient.Core.csproj" />
