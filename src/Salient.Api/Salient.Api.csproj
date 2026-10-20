@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <Description>Salient web host: REST API, SignalR hub, job queue, storage and SPA hosting.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Salient.Core\Salient.Core.csproj" />
+    <ProjectReference Include="..\Salient.Features\Salient.Features.csproj" />
+    <ProjectReference Include="..\Salient.Features.Sift\Salient.Features.Sift.csproj" />
+    <ProjectReference Include="..\Salient.Matching\Salient.Matching.csproj" />
+    <ProjectReference Include="..\Salient.Evaluation\Salient.Evaluation.csproj" />
+    <ProjectReference Include="..\Salient.Reference.OpenCv\Salient.Reference.OpenCv.csproj" />
+  </ItemGroup>
+
+</Project>

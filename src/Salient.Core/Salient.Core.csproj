@@ -1,0 +1,7 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>Image primitives for Salient: float images, convolution, pyramids and geometry. No external dependencies.</Description>
+  </PropertyGroup>
+
+</Project>

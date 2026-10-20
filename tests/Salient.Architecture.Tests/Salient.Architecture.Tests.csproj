@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Salient.Core\Salient.Core.csproj" />
+    <ProjectReference Include="..\..\src\Salient.Features\Salient.Features.csproj" />
+    <ProjectReference Include="..\..\src\Salient.Features.Sift\Salient.Features.Sift.csproj" />
+    <ProjectReference Include="..\..\src\Salient.Matching\Salient.Matching.csproj" />
+    <ProjectReference Include="..\..\src\Salient.Evaluation\Salient.Evaluation.csproj" />
+    <ProjectReference Include="..\..\src\Salient.Reference.OpenCv\Salient.Reference.OpenCv.csproj" />
+    <ProjectReference Include="..\..\src\Salient.Api\Salient.Api.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>OpenCV reference algorithms (SIFT, ORB, AKAZE) exposed through Salient's feature contracts.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Salient.Core\Salient.Core.csproj" />
+    <ProjectReference Include="..\Salient.Features\Salient.Features.csproj" />
+  </ItemGroup>
+
+</Project>

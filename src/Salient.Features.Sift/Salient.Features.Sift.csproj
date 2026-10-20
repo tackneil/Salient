@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>Salient's own implementation of the SIFT detector and descriptor (Lowe, 2004).</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Salient.Core\Salient.Core.csproj" />
+    <ProjectReference Include="..\Salient.Features\Salient.Features.csproj" />
+  </ItemGroup>
+
+</Project>

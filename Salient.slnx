@@ -1,0 +1,22 @@
+<Solution>
+  <Folder Name="/benchmarks/">
+    <Project Path="benchmarks/Salient.Benchmarks/Salient.Benchmarks.csproj" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/Salient.Api/Salient.Api.csproj" />
+    <Project Path="src/Salient.Core/Salient.Core.csproj" />
+    <Project Path="src/Salient.Evaluation/Salient.Evaluation.csproj" />
+    <Project Path="src/Salient.Features.Sift/Salient.Features.Sift.csproj" />
+    <Project Path="src/Salient.Features/Salient.Features.csproj" />
+    <Project Path="src/Salient.Matching/Salient.Matching.csproj" />
+    <Project Path="src/Salient.Reference.OpenCv/Salient.Reference.OpenCv.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Salient.Api.Tests/Salient.Api.Tests.csproj" />
+    <Project Path="tests/Salient.Architecture.Tests/Salient.Architecture.Tests.csproj" />
+    <Project Path="tests/Salient.Core.Tests/Salient.Core.Tests.csproj" />
+    <Project Path="tests/Salient.Evaluation.Tests/Salient.Evaluation.Tests.csproj" />
+    <Project Path="tests/Salient.Features.Sift.Tests/Salient.Features.Sift.Tests.csproj" />
+    <Project Path="tests/Salient.Matching.Tests/Salient.Matching.Tests.csproj" />
+  </Folder>
+</Solution>

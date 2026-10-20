@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Salient.Core\Salient.Core.csproj" />
+    <ProjectReference Include="..\..\src\Salient.Features\Salient.Features.csproj" />
+    <ProjectReference Include="..\..\src\Salient.Matching\Salient.Matching.csproj" />
+  </ItemGroup>
+
+</Project>

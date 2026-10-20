@@ -1,0 +1,11 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>Feature algorithm contracts for Salient: detectors, descriptor extractors, keypoints and parameter schemas.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Salient.Core\Salient.Core.csproj" />
+  </ItemGroup>
+
+</Project>

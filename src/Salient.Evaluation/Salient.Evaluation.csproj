@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>Robustness bench for Salient: synthetic transformations, repeatability and matching score sweeps.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Salient.Core\Salient.Core.csproj" />
+    <ProjectReference Include="..\Salient.Features\Salient.Features.csproj" />
+    <ProjectReference Include="..\Salient.Matching\Salient.Matching.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+    <Description>BenchmarkDotNet suites for Salient's image processing and feature algorithms.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BenchmarkDotNet" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Salient.Core\Salient.Core.csproj" />
+    <ProjectReference Include="..\..\src\Salient.Features.Sift\Salient.Features.Sift.csproj" />
+  </ItemGroup>
+
+</Project>
