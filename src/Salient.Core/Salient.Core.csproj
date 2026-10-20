@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <Description>Image primitives for Salient: float images, convolution, pyramids and geometry. No external dependencies.</Description>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
 </Project>
