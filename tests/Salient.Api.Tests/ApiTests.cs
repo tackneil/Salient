@@ -35,6 +35,27 @@ public sealed class ApiTests(SalientApiFactory factory) : IClassFixture<SalientA
     }
 
     [Fact]
+    public async Task Samples_can_be_listed_previewed_and_imported()
+    {
+        using var client = factory.CreateClient();
+
+        var samples = await client.GetJsonAsync<List<Images.SampleInfo>>("/api/samples");
+        var geometry = Assert.Single(samples, s => s.Name == "geometry.png");
+        Assert.Equal("Geometry", geometry.Title);
+
+        using var preview = await client.GetAsync(new Uri("/api/samples/geometry.png/content", UriKind.Relative));
+        Assert.Equal("image/png", preview.Content.Headers.ContentType!.MediaType);
+
+        using var imported = await client.PostAsync(new Uri("/api/samples/geometry.png", UriKind.Relative), null);
+        Assert.Equal(HttpStatusCode.Created, imported.StatusCode);
+        var image = await imported.Content.ReadFromJsonAsync<Images.ImageInfo>(SalientApiFactory.Json);
+        Assert.Equal((960, 640), (image!.Width, image.Height));
+
+        using var traversal = await client.PostAsync(new Uri("/api/samples/..%2Fappsettings.json", UriKind.Relative), null);
+        Assert.Equal(HttpStatusCode.NotFound, traversal.StatusCode);
+    }
+
+    [Fact]
     public async Task Uploads_are_deduplicated_and_invalid_files_rejected()
     {
         using var client = factory.CreateClient();

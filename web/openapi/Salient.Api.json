@@ -272,6 +272,85 @@
         }
       }
     },
+    "/api/samples": {
+      "get": {
+        "tags": [
+          "Samples"
+        ],
+        "operationId": "ListSamples",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SampleInfo"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/samples/{name}/content": {
+      "get": {
+        "tags": [
+          "Samples"
+        ],
+        "operationId": "GetSampleContent",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/samples/{name}": {
+      "post": {
+        "tags": [
+          "Samples"
+        ],
+        "operationId": "ImportSample",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImageInfo"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
     "/api/runs": {
       "post": {
         "tags": [
@@ -1633,6 +1712,21 @@
           "canceled"
         ]
       },
+      "SampleInfo": {
+        "required": [
+          "name",
+          "title"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          }
+        }
+      },
       "StageInfo": {
         "required": [
           "id",
@@ -1773,6 +1867,9 @@
     },
     {
       "name": "Images"
+    },
+    {
+      "name": "Samples"
     }
   ]
 }

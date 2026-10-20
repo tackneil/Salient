@@ -1,0 +1,17 @@
+services:
+  salient:
+    build: .
+    image: salient:local
+    ports:
+      - "8080:8080"
+    volumes:
+      - salient-data:/data
+    environment:
+      # Safeguards for a public demo (ADR-0013); adjust as needed.
+      Salient__MaxPixels: "4000000"
+      Salient__JobsPerMinutePerClient: "30"
+      Salient__RetentionDays: "7"
+    restart: unless-stopped
+
+volumes:
+  salient-data:

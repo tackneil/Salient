@@ -28,6 +28,11 @@ public static class Endpoints
         images.MapGet("/{id}", GetImageAsync).WithName("GetImage");
         images.MapGet("/{id}/content", GetImageContentAsync).WithName("GetImageContent");
 
+        var samples = api.MapGroup("/samples").WithTags("Samples");
+        samples.MapGet("/", (SampleService s) => TypedResults.Ok(s.List())).WithName("ListSamples");
+        samples.MapGet("/{name}/content", GetSampleContent).WithName("GetSampleContent");
+        samples.MapPost("/{name}", ImportSampleAsync).WithName("ImportSample").RequireRateLimiting(JobsRateLimit);
+
         var runs = api.MapGroup("/runs").WithTags("Runs");
         runs.MapPost("/", (DetectionRequest r, RunService s, CancellationToken ct) => CreateAsync(() => s.CreateDetectionAsync(r, ct)))
             .WithName("CreateDetectionRun").RequireRateLimiting(JobsRateLimit);
@@ -79,6 +84,39 @@ public static class Endpoints
         {
             return TypedResults.Problem(statusCode: StatusCodes.Status400BadRequest, title: "Invalid image", detail: ex.Message);
         }
+    }
+
+private static IResult GetSampleContent(string name, SampleService samples, HttpContext context)
+    {
+        if (samples.Find(name) is not { } path)
+        {
+            return TypedResults.NotFound();
+        }
+
+        context.Response.Headers.CacheControl = "public, max-age=3600";
+        var type = Path.GetExtension(path).ToLowerInvariant() switch
+        {
+            ".jpg" or ".jpeg" => "image/jpeg",
+            ".webp" => "image/webp",
+            _ => "image/png",
+        };
+        return TypedResults.PhysicalFile(path, type);
+    }
+
+    private static async Task<Results<Created<ImageInfo>, NotFound>> ImportSampleAsync(
+        string name,
+        SampleService samples,
+        ImageService images,
+        CancellationToken cancellationToken)
+    {
+        if (samples.Find(name) is not { } path)
+        {
+            return TypedResults.NotFound();
+        }
+
+        await using var stream = File.OpenRead(path);
+        var info = await images.StoreAsync(stream, name, cancellationToken);
+        return TypedResults.Created($"/api/images/{info.Id}", info);
     }
 
     private static async Task<Results<Ok<ImageInfo>, NotFound>> GetImageAsync(string id, ImageService images, CancellationToken cancellationToken) =>

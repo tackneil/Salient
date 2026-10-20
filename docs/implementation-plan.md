@@ -2,6 +2,13 @@
 
 This plan turns the accepted ADRs (`docs/adr/`) and the design mockup ("Salient UI" canvas) into working software. Each phase ends with a **definition of done** that can be checked. Phases are ordered by dependency; the [Parallel work](#parallel-work) section lists what can run at the same time.
 
+> **Status (2026-10-20):** all phases 0–9 are complete. Deviations from the original plan are recorded in the ADR amendments:
+> - ADR-0003, ADR-0004 and ADR-0006 were extended for exploration runs, diagnostics and heatmaps;
+> - ADR-0009 replaced ImageSharp with SkiaSharp;
+> - ADR-0011 moved from Node 22 to Node 24 and chose ESLint over oxlint.
+>
+> The CI workflow exists but has not run: there is no remote yet.
+
 ## Milestones
 
 | Milestone | Phases | Outcome |

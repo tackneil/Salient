@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <Description>OpenCV reference algorithms (SIFT, ORB, AKAZE) exposed through Salient's feature contracts.</Description>
@@ -7,8 +7,9 @@
 
   <ItemGroup>
     <PackageReference Include="OpenCvSharp4" />
-    <PackageReference Include="OpenCvSharp4.runtime.win" />
-    <PackageReference Include="OpenCvSharp4.official.runtime.linux-x64" />
+    <!-- Native OpenCV for the build platform only; the Docker image and CI need just the Linux runtime. -->
+    <PackageReference Include="OpenCvSharp4.runtime.win" Condition="'$(OS)' == 'Windows_NT'" />
+    <PackageReference Include="OpenCvSharp4.official.runtime.linux-x64.slim" Condition="'$(OS)' != 'Windows_NT'" />
   </ItemGroup>
 
   <ItemGroup>

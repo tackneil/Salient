@@ -31,6 +31,7 @@ import { HeatmapLegend } from '../../shared/components/HeatmapLegend'
 import { ImageStage, StageImage } from '../../shared/components/ImageStage'
 import { ParameterForm } from '../../shared/components/ParameterForm'
 import { RunProgressBar } from '../../shared/components/RunProgressBar'
+import { SampleGallery } from '../../shared/components/SampleGallery'
 import { Section } from '../../shared/components/Section'
 import { normalizeValues, parseSchema } from '../../shared/schema/parameterSchema'
 import { SIFT_DETECTION_STAGES } from '../../shared/stages'
@@ -75,6 +76,7 @@ export function DetectorPage() {
     setParameters,
     setDetectionRun,
     setAlgorithm,
+    setImage,
   } = useWorkspace()
   const algorithms = useAlgorithms()
   const image = useImage(imageId)
@@ -225,7 +227,16 @@ export function DetectorPage() {
 
   if (!imageId || !image.data) {
     return (
-      <EmptyState title="Upload an image to start">
+      <EmptyState
+        title="Upload an image to start"
+        action={
+          <SampleGallery
+            onImported={(sample) => {
+              setImage(sample.id)
+            }}
+          />
+        }
+      >
         Salient detects SIFT keypoints, shows every step of the pipeline and lets you inspect
         individual keypoints. Use “Upload image” in the top bar.
       </EmptyState>

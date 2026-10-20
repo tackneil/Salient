@@ -9,6 +9,9 @@ public sealed class SalientOptions
     /// <summary>Folder for the SQLite database and blobs (ADR-0008). Relative paths are resolved against the content root.</summary>
     public string StorageRoot { get; set; } = "data";
 
+    /// <summary>Folder with the bundled sample images, relative to the content root.</summary>
+    public string SamplesPath { get; set; } = "samples";
+
     /// <summary>Largest accepted upload in bytes (ADR-0013).</summary>
     public long MaxUploadBytes { get; set; } = 10 * 1024 * 1024;
 

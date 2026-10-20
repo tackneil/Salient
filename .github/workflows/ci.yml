@@ -17,7 +17,7 @@ jobs:
 
       - uses: actions/setup-dotnet@v4
         with:
-          global-json-file: global.json
+          dotnet-version: 10.0.x
 
       - name: Restore
         run: dotnet restore Salient.slnx
@@ -28,6 +28,9 @@ jobs:
       - name: Test
         run: dotnet test Salient.slnx --no-build --configuration Release --logger trx --results-directory TestResults
 
+      - name: Check that the committed OpenAPI document is current
+        run: git diff --exit-code -- web/openapi
+
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
@@ -36,7 +39,7 @@ jobs:
           path: TestResults
 
   web:
-    name: Web lint, typecheck and build
+    name: Web lint, typecheck, test and build
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -53,4 +56,38 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm run typecheck
+      - run: npm test
+      - name: Check that the generated API client is current
+        run: npm run api:generate && git diff --exit-code -- src/shared/api/generated
       - run: npm run build
+
+  e2e:
+    name: End-to-end tests
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: web/.nvmrc
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run e2e
+        env:
+          CI: 'true'
+
+  docker:
+    name: Docker image
+    if: github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t salient:ci .

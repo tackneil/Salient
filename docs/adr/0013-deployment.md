@@ -20,6 +20,7 @@ Salient is a portfolio project. It needs to run locally with one command and be 
   - ASP.NET Core rate limiting per IP for job creation;
   - a cap on concurrent jobs;
   - storage retention (ADR-0008).
+- **OpenCV runtime package:** the image uses `OpenCvSharp4.official.runtime.linux-x64.slim`. The full package is built with OpenCV's GUI module and needs GTK, cairo and X11, none of which are in the ASP.NET image. The Windows runtime is referenced only when building on Windows. The resulting image is about 820 MB. *(Amended 2026-10-20 during Phase 9.)*
 - **OpenCV is optional at runtime:** if the native library fails to load, the reference algorithms are not registered, and the UI hides "Compare with OpenCV" and the reference curves.
 - **Hosting target:** decided later. Any container host with a persistent volume works, for example Azure Container Apps, Fly.io or a small VPS.
 

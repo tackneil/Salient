@@ -1,0 +1,16 @@
+**/bin/
+**/obj/
+**/node_modules/
+**/BenchmarkDotNet.Artifacts/
+web/dist/
+web/test-results/
+web/playwright-report/
+data/
+**/data/
+.git/
+.github/
+tests/
+benchmarks/
+docs/
+*.md
+!samples/*.md

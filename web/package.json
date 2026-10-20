@@ -16,6 +16,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
+    "e2e": "playwright test --project=e2e",
+    "screenshots": "playwright test --project=screenshots",
     "api:generate": "openapi-typescript openapi/Salient.Api.json -o src/shared/api/generated/schema.ts && prettier --write src/shared/api/generated/schema.ts"
   },
   "dependencies": {
@@ -36,6 +38,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.64.1",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",
     "@testing-library/user-event": "^14.6.8",

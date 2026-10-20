@@ -40,6 +40,7 @@ builder.Services.AddDbContextFactory<SalientDbContext>((services, options) =>
     options.UseSqlite($"Data Source={Path.Combine(services.GetRequiredService<BlobStore>().Root, "salient.db")}"));
 builder.Services.AddSingleton(_ => AlgorithmRegistry.CreateDefault(ApiJson.Options, includeOpenCv: true));
 builder.Services.AddSingleton<ImageService>();
+builder.Services.AddSingleton<SampleService>();
 builder.Services.AddSingleton<RunTracker>();
 builder.Services.AddSingleton<RunDispatcher>();
 builder.Services.AddSingleton<RunService>();
