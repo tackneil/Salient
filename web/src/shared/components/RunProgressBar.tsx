@@ -192,8 +192,9 @@ export function RunProgressBar({
             </Box>
           )}
         </Box>
-        {details && (
+        {(Boolean(details) || reserve) && (
           <IconButton
+            disabled={!details}
             aria-label={detailsLabel}
             aria-haspopup="dialog"
             aria-expanded={open}
