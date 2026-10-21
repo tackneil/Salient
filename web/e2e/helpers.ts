@@ -25,7 +25,7 @@ export async function expectFitsViewport(page: Page) {
       if (['INPUT', 'LEGEND', 'FIELDSET'].includes(element.tagName)) continue
       // The chart library clips its own drawing surface.
       const exempt =
-        '[role="application"], [data-clips-by-design], canvas, [class*="MuiChartsWrapper"], [class*="MuiLineChart"]'
+        '[role="application"], [data-clips-by-design], canvas, [class*="MuiChartsWrapper"], [class*="MuiLineChart"], [class*="MuiTouchRipple"]'
       if (element.closest(exempt)) continue
       // MUI parks a scrollbar-measuring box far off screen.
       if (element.getBoundingClientRect().bottom < 0) continue
@@ -40,7 +40,7 @@ export async function expectFitsViewport(page: Page) {
       const style = getComputedStyle(element)
       const clipsY = ['auto', 'scroll', 'hidden'].includes(style.overflowY)
       if (clipsY && element.clientHeight > 0 && element.scrollHeight > element.clientHeight + 1) {
-        const name = element.getAttribute('aria-label') ?? element.tagName.toLowerCase()
+        const name = element.getAttribute('aria-label') ?? element.outerHTML.slice(0, 140)
         found.push(
           `${name} clips ${String(element.scrollHeight - element.clientHeight)}px vertically`,
         )

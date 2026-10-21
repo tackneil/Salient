@@ -53,7 +53,7 @@ export function ThresholdHistogram({
             sx={{
               flex: '1 1 0',
               height: `${(count / peak) * 100}%`,
-              minHeight: count > 0 ? 1 : 0,
+              minHeight: count > 0 ? '1px' : 0,
               bgcolor: active ? '#3f5f93' : '#2a3242',
               borderRadius: '1px 1px 0 0',
             }}

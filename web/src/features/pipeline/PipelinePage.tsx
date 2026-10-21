@@ -362,7 +362,7 @@ export function PipelinePage() {
 
 function Explanation({ step }: { step: PipelineStep }) {
   return (
-    <Section title="What happens">
+    <Section title="What happens" grow>
       <Typography sx={{ lineHeight: 1.6, color: '#d4d8e1' }}>{step.text}</Typography>
       <Box
         sx={{

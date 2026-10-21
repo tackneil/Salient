@@ -451,7 +451,7 @@ export function DetectorPage() {
             </Typography>
           </Section>
 
-          <Section title="Parameters">
+          <Section title="Parameters" grow>
             <ParameterForm
               fields={fields}
               values={values}
@@ -485,6 +485,7 @@ export function DetectorPage() {
                   : undefined
               }
             />
+            <Box sx={{ flex: 1 }} />
             <Box sx={{ display: 'flex', gap: 1 }}>
               <Tooltip title="Thresholds apply instantly; other parameters need a new run.">
                 <Box component="span" sx={{ flex: 1, display: 'flex' }}>

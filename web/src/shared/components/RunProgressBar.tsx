@@ -125,7 +125,8 @@ export function RunProgressBar({
             minWidth: 0,
             overflowX: 'auto',
             overflowY: 'hidden',
-            scrollbarWidth: 'thin',
+            scrollbarWidth: 'none',
+            '&::-webkit-scrollbar': { display: 'none' },
           }}
         >
           {run.stages.map((stage) => (

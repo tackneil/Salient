@@ -27,7 +27,7 @@ export function Section({
         display: 'flex',
         flexDirection: 'column',
         gap,
-        ...(grow ? { flex: '1 1 0', minHeight: 0 } : {}),
+        ...(grow ? { flex: '1 0 auto' } : {}),
       }}
     >
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 1 }}>
