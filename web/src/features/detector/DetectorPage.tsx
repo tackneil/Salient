@@ -249,6 +249,7 @@ export function DetectorPage() {
         run={run.data}
         expectedStages={algorithmId === 'sift' ? SIFT_DETECTION_STAGES : ['load', 'opencv']}
         title="Run"
+        reserve
         detailsLabel="Show timing breakdown"
         details={
           run.data && run.data.stages.length > 0 ? (

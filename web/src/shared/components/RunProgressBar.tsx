@@ -15,18 +15,29 @@ import { monoFontFamily, tokens } from '../../app/theme'
 import type { RunInfo } from '../api/client'
 import { labelFor } from '../stages'
 
+/** Stands in for a run that has not been created yet; only the fields the bar reads are meaningful. */
+const PENDING_RUN = {
+  status: 'queued',
+  stages: [],
+  progress: null,
+  error: null,
+} as unknown as RunInfo
+
 /**
  * Live stage chips and an overall progress line for a run (ADR-0005). The chips stay on one line and scroll
  * sideways as stages arrive; `details`, when given, opens from a chevron as a panel over the view (ADR-0015).
  */
 export function RunProgressBar({
-  run,
+  run: runOrNothing,
+  reserve = false,
   expectedStages,
   title,
   details,
   detailsLabel = 'Show details',
 }: {
   run: RunInfo | undefined
+  /** Keeps the bar (as a pending run) while there is no run yet, so the view below does not jump. */
+  reserve?: boolean
   expectedStages: readonly string[]
   title: string
   details?: ReactNode
@@ -35,6 +46,7 @@ export function RunProgressBar({
   const [anchor, setAnchor] = useState<HTMLElement | null>(null)
   const [open, setOpen] = useState(false)
   const list = useRef<HTMLOListElement>(null)
+  const run = runOrNothing ?? (reserve ? PENDING_RUN : undefined)
   const stages = run?.stages
 
   // Keep the stage that is running in view.
