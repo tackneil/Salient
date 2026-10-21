@@ -52,6 +52,7 @@ test('match a rotated test pair and recover the rotation', async ({ page }) => {
   const degrees = Number(/rotation\s*(-?[\d.]+)°/.exec(text)?.[1])
   expect(degrees).toBeGreaterThan(9.5)
   expect(degrees).toBeLessThan(10.5)
+  await expectFitsViewport(page)
 })
 
 test('run a robustness sweep for one detector', async ({ page }) => {
@@ -66,4 +67,5 @@ test('run a robustness sweep for one detector', async ({ page }) => {
 
   await expect(page.getByRole('table')).toBeVisible({ timeout: 110_000 })
   await expect(page.getByText(/keeps the most correct matches/)).toBeVisible()
+  await expectFitsViewport(page)
 })

@@ -11,7 +11,8 @@ export async function loadSample(page: Page, title = 'Synthetic scene') {
 
 /**
  * Every view must fit one viewport (ADR-0015): the page itself never scrolls and no card clips or scrolls its own
- * content. The image stage and its canvases are exempt, because they clip a zoomable image by design.
+ * content. The image stage, its canvases and anything marked `data-clips-by-design` are exempt, because they clip a zoomable or
+ * transformed image on purpose.
  */
 export async function expectFitsViewport(page: Page) {
   const problems = await page.evaluate(() => {
@@ -22,7 +23,12 @@ export async function expectFitsViewport(page: Page) {
     for (const element of document.querySelectorAll<HTMLElement>('main *')) {
       // Form internals that MUI clips on purpose (slider inputs, the label notch of an outlined field).
       if (['INPUT', 'LEGEND', 'FIELDSET'].includes(element.tagName)) continue
-      if (element.closest('[role="application"], [role="presentation"], canvas')) continue
+      // The chart library clips its own drawing surface.
+      const exempt =
+        '[role="application"], [data-clips-by-design], canvas, [class*="MuiChartsWrapper"], [class*="MuiLineChart"]'
+      if (element.closest(exempt)) continue
+      // MUI parks a scrollbar-measuring box far off screen.
+      if (element.getBoundingClientRect().bottom < 0) continue
       // Content pushed below the viewport by the shell's own clipping.
       if (element.getBoundingClientRect().bottom > window.innerHeight + 1) {
         let clipped = false

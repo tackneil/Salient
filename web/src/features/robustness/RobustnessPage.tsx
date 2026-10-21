@@ -33,7 +33,7 @@ import {
 import { useRunProgress } from '../../shared/api/realtime'
 import { EmptyState } from '../../shared/components/EmptyState'
 import { RunProgressBar } from '../../shared/components/RunProgressBar'
-import { Section } from '../../shared/components/Section'
+import { fillCardSx, sideColumnSx, viewSx, VIEW_GAP } from '../../shared/layout'
 
 const FAMILIES: {
   id: TransformationFamily
@@ -117,6 +117,7 @@ export function RobustnessPage() {
   const index = Math.min(valueIndex, Math.max(0, values.length - 1))
   const value = values[index] ?? 0
   const busy = create.isPending || run.data?.status === 'running' || run.data?.status === 'queued'
+  const aspect = image.data.width / image.data.height
 
   const runSweep = () => {
     create.mutate(
@@ -130,25 +131,28 @@ export function RobustnessPage() {
   }
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+    <Box sx={viewSx}>
       <Paper
         variant="outlined"
         component="section"
         aria-label="Sweep settings"
         sx={{
+          flex: '0 0 auto',
           px: 2,
-          py: 1.5,
+          py: 0.5,
           display: 'flex',
-          flexWrap: 'wrap',
+          flexWrap: 'nowrap',
           alignItems: 'center',
-          gap: '12px 24px',
+          gap: 3,
+          overflowX: 'auto',
         }}
       >
-        <FormGroup row aria-label="Detectors">
+        <FormGroup row aria-label="Detectors" sx={{ flexWrap: 'nowrap' }}>
           {describing.map((a) => (
             <FormControlLabel
               key={a.id}
               label={a.displayName}
+              sx={{ whiteSpace: 'nowrap' }}
               control={
                 <Checkbox
                   size="small"
@@ -171,6 +175,7 @@ export function RobustnessPage() {
           startIcon={<PlayArrowIcon />}
           onClick={runSweep}
           disabled={busy || selectedAlgorithms.length === 0}
+          sx={{ flex: '0 0 auto', whiteSpace: 'nowrap' }}
         >
           {busy ? 'Sweeping…' : 'Run sweep'}
         </Button>
@@ -183,12 +188,14 @@ export function RobustnessPage() {
       <Paper
         variant="outlined"
         sx={{
+          flex: '0 0 auto',
           px: 2,
-          py: 1.25,
+          py: 0.5,
           display: 'flex',
-          flexWrap: 'wrap',
+          flexWrap: 'nowrap',
           alignItems: 'center',
-          gap: '8px 24px',
+          gap: 3,
+          overflowX: 'auto',
         }}
       >
         <Tabs
@@ -198,14 +205,14 @@ export function RobustnessPage() {
             setValueIndex(0)
           }}
           aria-label="Transformation family"
-          sx={{ minHeight: 40, '& .MuiTab-root': { minHeight: 40 } }}
+          sx={{ flex: '0 0 auto', minHeight: 40, '& .MuiTab-root': { minHeight: 40 } }}
         >
           {FAMILIES.map((f) => (
             <Tab key={f.id} value={f.id} label={f.label} />
           ))}
         </Tabs>
         <Box
-          sx={{ flex: '1 1 280px', display: 'flex', alignItems: 'center', gap: 1.5, minWidth: 240 }}
+          sx={{ flex: '1 0 280px', display: 'flex', alignItems: 'center', gap: 1.5, minWidth: 240 }}
         >
           <Typography
             id="value-label"
@@ -242,46 +249,48 @@ export function RobustnessPage() {
         </Box>
       </Paper>
 
-      <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'flex-start', gap: 2 }}>
-        <Section title="Pair">
-          <Box
-            sx={{
-              width: { xs: '100%', sm: 360 },
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 1.5,
-            }}
+      <Box sx={{ flex: '1 1 0', minHeight: 0, display: 'flex', gap: VIEW_GAP }}>
+        <Paper
+          variant="outlined"
+          component="aside"
+          aria-label="Image pair and values"
+          sx={{ ...sideColumnSx(380), p: 2, gap: 1.5, boxSizing: 'border-box' }}
+        >
+          <Typography
+            variant="overline"
+            component="h2"
+            color="text.secondary"
+            sx={{ lineHeight: 1.5 }}
           >
-            <Preview
-              imageId={imageId}
-              aspect={image.data.width / image.data.height}
-              caption="A · reference"
-            />
-            <Preview
-              imageId={imageId}
-              aspect={image.data.width / image.data.height}
-              caption={`B · ${family?.label.toLowerCase() ?? ''} ${values.length > 0 ? (family?.format(value) ?? '') : ''}`}
-              family={familyId}
-              value={value}
-            />
-          </Box>
-        </Section>
+            Pair
+          </Typography>
+          <Preview imageId={imageId} aspect={aspect} caption="A · reference" />
+          <Preview
+            imageId={imageId}
+            aspect={aspect}
+            caption={`B · ${family?.label.toLowerCase() ?? ''} ${values.length > 0 ? (family?.format(value) ?? '') : ''}`}
+            family={familyId}
+            value={value}
+          />
+          {sweep && <ValueTable sweep={sweep} index={index} label={family?.format(value) ?? ''} />}
+        </Paper>
 
         <Paper
           variant="outlined"
           component="section"
           aria-label="Robustness chart"
-          sx={{
-            flex: '999 1 560px',
-            minWidth: 0,
-            p: 2,
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 2,
-          }}
+          sx={{ ...fillCardSx, p: 2, gap: 1.5 }}
         >
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '8px 16px' }}>
-            <Typography component="h2" sx={{ fontSize: 16, fontWeight: 600, flex: 1 }}>
+          <Box
+            sx={{
+              flex: '0 0 auto',
+              display: 'flex',
+              flexWrap: 'nowrap',
+              alignItems: 'center',
+              gap: 2,
+            }}
+          >
+            <Typography component="h2" noWrap sx={{ fontSize: 16, fontWeight: 600, flex: 1 }}>
               {METRICS.find((m) => m.id === metric)?.label} vs {family?.parameter.toLowerCase()}
             </Typography>
             <ToggleButtonGroup
@@ -292,9 +301,10 @@ export function RobustnessPage() {
                 if (v) setMetric(v)
               }}
               aria-label="Metric"
+              sx={{ flex: '0 0 auto' }}
             >
               {METRICS.map((m) => (
-                <ToggleButton key={m.id} value={m.id}>
+                <ToggleButton key={m.id} value={m.id} sx={{ whiteSpace: 'nowrap' }}>
                   {m.label}
                 </ToggleButton>
               ))}
@@ -312,21 +322,24 @@ export function RobustnessPage() {
               }}
             />
           ) : (
-            <Typography color="text.secondary" sx={{ py: 10, textAlign: 'center' }}>
+            <Typography
+              color="text.secondary"
+              sx={{ flex: 1, display: 'grid', placeItems: 'center', textAlign: 'center' }}
+            >
               {busy
                 ? 'The sweep is running; curves appear when it finishes.'
                 : 'Run a sweep to compare detectors on this image.'}
             </Typography>
           )}
           {sweep && (
-            <AtValue
+            <Insight
               sweep={sweep}
               index={index}
               label={family?.format(value) ?? ''}
               format={family?.format ?? String}
             />
           )}
-          <Typography variant="caption" color="text.secondary">
+          <Typography variant="caption" color="text.secondary" sx={{ flex: '0 0 auto' }}>
             A match is correct when the matched keypoint lies within 3 px of the ground-truth
             projection. Ratio test 0.8. {METRICS.find((m) => m.id === metric)?.description}.
           </Typography>
@@ -336,6 +349,7 @@ export function RobustnessPage() {
   )
 }
 
+/** One image of the pair, fitted into the height it is given; the transform shows what the sweep applies. */
 function Preview({
   imageId,
   aspect,
@@ -359,51 +373,89 @@ function Preview({
         ? `brightness(${((128 + v) / 128).toFixed(2)})`
         : 'none'
   return (
-    <Box component="figure" sx={{ m: 0, display: 'flex', flexDirection: 'column', gap: 0.75 }}>
+    <Box
+      component="figure"
+      sx={{
+        m: 0,
+        flex: '1 1 0',
+        minHeight: 96,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 0.5,
+      }}
+    >
       <Box
         sx={{
-          position: 'relative',
-          aspectRatio: String(aspect),
-          borderRadius: 1,
-          overflow: 'hidden',
-          bgcolor: '#000',
+          flex: '1 1 0',
+          minHeight: 0,
+          containerType: 'size',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
         }}
       >
         <Box
-          component="img"
-          src={imageContentUrl(imageId)}
-          alt={caption}
+          data-clips-by-design
           sx={{
-            position: 'absolute',
-            inset: 0,
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            transform,
-            filter,
+            position: 'relative',
+            flex: '0 0 auto',
+            width: `min(100cqw, ${String(aspect * 100)}cqh)`,
+            aspectRatio: String(aspect),
+            borderRadius: 1,
+            overflow: 'hidden',
+            bgcolor: '#000',
           }}
-        />
-        {family === 'noise' && (
+        >
           <Box
-            aria-hidden
+            component="img"
+            src={imageContentUrl(imageId)}
+            alt={caption}
             sx={{
               position: 'absolute',
               inset: 0,
-              opacity: Math.min(0.9, v / 40),
-              backgroundImage: 'repeating-conic-gradient(#fff 0 25%, #000 0 50%)',
-              backgroundSize: '3px 3px',
-              mixBlendMode: 'overlay',
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              transform,
+              filter,
             }}
           />
-        )}
+          <Typography
+            component="figcaption"
+            variant="caption"
+            sx={{
+              position: 'absolute',
+              left: 8,
+              bottom: 8,
+              px: 1,
+              py: 0.25,
+              borderRadius: 1,
+              bgcolor: 'rgba(11,13,17,0.8)',
+              color: 'text.primary',
+            }}
+          >
+            {caption}
+          </Typography>
+          {family === 'noise' && (
+            <Box
+              aria-hidden
+              sx={{
+                position: 'absolute',
+                inset: 0,
+                opacity: Math.min(0.9, v / 40),
+                backgroundImage: 'repeating-conic-gradient(#fff 0 25%, #000 0 50%)',
+                backgroundSize: '3px 3px',
+                mixBlendMode: 'overlay',
+              }}
+            />
+          )}
+        </Box>
       </Box>
-      <Typography component="figcaption" variant="caption" color="text.secondary">
-        {caption}
-      </Typography>
     </Box>
   )
 }
 
+/** Detector toggles above a chart that fills the rest of the card. */
 function SweepChart({
   sweep,
   metric,
@@ -423,9 +475,9 @@ function SweepChart({
     .map((s, i) => ({ s, color: SERIES_COLORS[i % SERIES_COLORS.length] ?? tokens.keypoint }))
     .filter(({ s }) => !hidden.includes(s.extractorId))
   return (
-    <Box>
+    <Box sx={{ flex: '1 1 0', minHeight: 0, display: 'flex', flexDirection: 'column', gap: 1 }}>
       <Box
-        sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.75, mb: 1 }}
+        sx={{ flex: '0 0 auto', display: 'flex', flexWrap: 'nowrap', gap: 0.75 }}
         role="group"
         aria-label="Detectors shown"
       >
@@ -440,7 +492,7 @@ function SweepChart({
               onChange={() => {
                 onToggle(s.extractorId)
               }}
-              sx={{ gap: 1 }}
+              sx={{ gap: 1, whiteSpace: 'nowrap' }}
             >
               <Box
                 sx={{
@@ -454,37 +506,131 @@ function SweepChart({
           )
         })}
       </Box>
-      <LineChart
-        height={320}
-        xAxis={[
-          {
-            data: [...sweep.values],
-            scaleType: 'linear',
-            valueFormatter: (v: number) => format(v),
-          },
-        ]}
-        yAxis={[{ min: 0, max: 1, valueFormatter: (v: number) => `${Math.round(v * 100)}%` }]}
-        series={series.map(({ s, color }) => ({
-          id: s.extractorId,
-          label: s.displayName,
-          color,
-          curve: 'linear' as const,
-          data: s.points.map((p) => p.metrics[metric]),
-          valueFormatter: (v: number | null) => (v === null ? '' : `${(v * 100).toFixed(1)}%`),
-        }))}
-        hideLegend
-        grid={{ horizontal: true }}
-      >
-        <ChartsReferenceLine
-          x={value}
-          lineStyle={{ strokeDasharray: '4 4', stroke: '#e6e8ee', opacity: 0.6 }}
-        />
-      </LineChart>
+      <Box sx={{ flex: '1 1 0', minHeight: 160 }}>
+        <LineChart
+          xAxis={[
+            {
+              data: [...sweep.values],
+              scaleType: 'linear',
+              valueFormatter: (v: number) => format(v),
+            },
+          ]}
+          yAxis={[{ min: 0, max: 1, valueFormatter: (v: number) => `${Math.round(v * 100)}%` }]}
+          series={series.map(({ s, color }) => ({
+            id: s.extractorId,
+            label: s.displayName,
+            color,
+            curve: 'linear' as const,
+            data: s.points.map((p) => p.metrics[metric]),
+            valueFormatter: (v: number | null) => (v === null ? '' : `${(v * 100).toFixed(1)}%`),
+          }))}
+          hideLegend
+          grid={{ horizontal: true }}
+        >
+          <ChartsReferenceLine
+            x={value}
+            lineStyle={{ strokeDasharray: '4 4', stroke: '#e6e8ee', opacity: 0.6 }}
+          />
+        </LineChart>
+      </Box>
     </Box>
   )
 }
 
-function AtValue({
+const pct = (v: number | undefined) => (v === undefined ? '—' : `${Math.round(v * 100)}%`)
+
+/** Every detector's metrics at the selected value. */
+function ValueTable({ sweep, index, label }: { sweep: SweepResult; index: number; label: string }) {
+  const rows = sweep.series.map((s) => ({ s, metrics: s.points[index]?.metrics }))
+  const headers = ['Detector', 'Correct', 'Repeatability', 'Precision']
+  return (
+    <Box
+      component="table"
+      sx={{ flex: '0 0 auto', width: '100%', borderCollapse: 'collapse', fontSize: 13 }}
+    >
+      <Box
+        component="caption"
+        sx={{ textAlign: 'left', fontSize: 12, color: 'text.secondary', pb: 0.75 }}
+      >
+        At {label}
+      </Box>
+      <thead>
+        <tr>
+          {headers.map((h, i) => (
+            <Box
+              component="th"
+              scope="col"
+              key={h}
+              sx={{
+                textAlign: i === 0 ? 'left' : 'right',
+                py: 0.5,
+                pl: i === 0 ? 0 : 1,
+                fontWeight: 500,
+                color: 'text.secondary',
+                borderBottom: 1,
+                borderColor: 'divider',
+              }}
+            >
+              {h}
+            </Box>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map(({ s, metrics }, i) => (
+          <tr key={s.extractorId}>
+            <Box
+              component="th"
+              scope="row"
+              sx={{
+                textAlign: 'left',
+                py: 0.75,
+                fontWeight: 500,
+                whiteSpace: 'nowrap',
+                borderBottom: 1,
+                borderColor: 'divider',
+              }}
+            >
+              <Box
+                component="span"
+                sx={{
+                  display: 'inline-block',
+                  width: 10,
+                  height: 10,
+                  borderRadius: '50%',
+                  bgcolor: SERIES_COLORS[i % SERIES_COLORS.length],
+                  mr: 1,
+                }}
+              />
+              {s.displayName}
+            </Box>
+            {[metrics?.matchingScore, metrics?.repeatability, metrics?.matchPrecision].map(
+              (v, j) => (
+                <Box
+                  component="td"
+                  key={['score', 'repeat', 'precision'][j]}
+                  sx={{
+                    textAlign: 'right',
+                    py: 0.75,
+                    pl: 1,
+                    fontFamily: monoFontFamily,
+                    borderBottom: 1,
+                    borderColor: 'divider',
+                  }}
+                >
+                  {pct(v)}
+                </Box>
+              ),
+            )}
+          </tr>
+        ))}
+      </tbody>
+    </Box>
+  )
+}
+
+/** A sentence about who wins at the selected value and where SIFT is weakest. */
+function Insight({
   sweep,
   index,
   label,
@@ -505,109 +651,31 @@ function AtValue({
     (w, p) => (p.metrics.matchingScore < w.metrics.matchingScore ? p : w),
     sift.points[0] ?? { value: 0, metrics: { matchingScore: 1 } as never },
   )
-  const pct = (v: number | undefined) => (v === undefined ? '—' : `${Math.round(v * 100)}%`)
 
   return (
-    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, alignItems: 'stretch' }}>
-      <Box component="table" sx={{ flex: '1 1 360px', borderCollapse: 'collapse', fontSize: 13 }}>
-        <Box
-          component="caption"
-          sx={{ textAlign: 'left', fontSize: 12, color: 'text.secondary', pb: 1 }}
-        >
-          At {label}
-        </Box>
-        <thead>
-          <tr>
-            {['Detector', 'Correct matches', 'Repeatability', 'Precision'].map((h, i) => (
-              <Box
-                component="th"
-                scope="col"
-                key={h}
-                sx={{
-                  textAlign: i === 0 ? 'left' : 'right',
-                  py: 0.75,
-                  fontWeight: 500,
-                  color: 'text.secondary',
-                  borderBottom: 1,
-                  borderColor: 'divider',
-                }}
-              >
-                {h}
-              </Box>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map(({ s, metrics }, i) => (
-            <tr key={s.extractorId}>
-              <Box
-                component="th"
-                scope="row"
-                sx={{
-                  textAlign: 'left',
-                  py: 1,
-                  fontWeight: 500,
-                  borderBottom: 1,
-                  borderColor: 'divider',
-                }}
-              >
-                <Box
-                  component="span"
-                  sx={{
-                    display: 'inline-block',
-                    width: 10,
-                    height: 10,
-                    borderRadius: '50%',
-                    bgcolor: SERIES_COLORS[i % SERIES_COLORS.length],
-                    mr: 1,
-                  }}
-                />
-                {s.displayName}
-              </Box>
-              {[metrics?.matchingScore, metrics?.repeatability, metrics?.matchPrecision].map(
-                (v, j) => (
-                  <Box
-                    component="td"
-                    key={['score', 'repeat', 'precision'][j]}
-                    sx={{
-                      textAlign: 'right',
-                      py: 1,
-                      fontFamily: monoFontFamily,
-                      borderBottom: 1,
-                      borderColor: 'divider',
-                    }}
-                  >
-                    {pct(v)}
-                  </Box>
-                ),
-              )}
-            </tr>
-          ))}
-        </tbody>
-      </Box>
-      <Box
-        sx={{
-          flex: '1 1 240px',
-          p: 1.75,
-          borderRadius: 1.5,
-          bgcolor: '#1e222b',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 1,
-        }}
-      >
-        <Typography variant="overline" color="text.secondary">
-          Insight
-        </Typography>
-        <Typography sx={{ lineHeight: 1.55, color: '#d4d8e1' }}>
-          {best?.metrics
-            ? `At ${label}, ${best.s.displayName} keeps the most correct matches (${pct(best.metrics.matchingScore)}).`
-            : 'No data at this value.'}
-          {worst && sift
-            ? ` ${sift.displayName} is weakest at ${format(worst.value)} with ${pct(worst.metrics.matchingScore)} correct matches.`
-            : ''}
-        </Typography>
-      </Box>
+    <Box
+      sx={{
+        flex: '0 0 auto',
+        px: 1.75,
+        py: 1.25,
+        borderRadius: 1.5,
+        bgcolor: '#1e222b',
+        display: 'flex',
+        alignItems: 'baseline',
+        gap: 1.5,
+      }}
+    >
+      <Typography variant="overline" color="text.secondary" sx={{ flex: '0 0 auto' }}>
+        Insight
+      </Typography>
+      <Typography sx={{ lineHeight: 1.5, color: '#d4d8e1' }}>
+        {best?.metrics
+          ? `At ${label}, ${best.s.displayName} keeps the most correct matches (${pct(best.metrics.matchingScore)}).`
+          : 'No data at this value.'}
+        {worst && sift
+          ? ` ${sift.displayName} is weakest at ${format(worst.value)} with ${pct(worst.metrics.matchingScore)} correct matches.`
+          : ''}
+      </Typography>
     </Box>
   )
 }
