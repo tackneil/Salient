@@ -109,9 +109,9 @@ export function AppShell() {
       }}
     >
       <AppBar position="static" sx={{ flex: '0 0 auto' }}>
-        <Toolbar sx={{ gap: 3, flexWrap: 'nowrap', minHeight: 56 }}>
+        <Toolbar sx={{ gap: 3, flexWrap: 'nowrap', minHeight: { xs: 56, sm: 56 } }}>
           <SalientLogo />
-          <Tabs value={current} aria-label="Sections" sx={{ alignSelf: 'stretch' }}>
+          <Tabs value={current} aria-label="Sections" sx={{ alignSelf: 'stretch', minHeight: 56 }}>
             {sections.map((s) => (
               <Tab key={s.path} label={s.label} value={s.path} component={NavLink} to={s.path} />
             ))}
