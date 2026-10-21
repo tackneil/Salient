@@ -205,7 +205,8 @@ export function PipelinePage() {
           <Box
             sx={{
               flex: '0 0 auto',
-              minHeight: 48,
+              height: 56,
+              boxSizing: 'border-box',
               display: 'flex',
               flexWrap: 'nowrap',
               alignItems: 'center',
