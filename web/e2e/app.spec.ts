@@ -30,9 +30,11 @@ test('step through the pipeline', async ({ page }) => {
 
   await page.getByRole('button', { name: /Gaussian pyramid/ }).click()
   await expect(page.getByRole('img', { name: /Gaussian layer 0 of octave 0/ })).toBeVisible()
+  await expectFitsViewport(page)
 
   await page.getByRole('button', { name: /Edge rejection/ }).click()
   await expect(page.getByText(/kept · \d+ rejected at this stage/)).toBeVisible()
+  await expectFitsViewport(page)
 })
 
 test('match a rotated test pair and recover the rotation', async ({ page }) => {
