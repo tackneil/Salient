@@ -75,7 +75,7 @@ export const PIPELINE_STEPS: readonly PipelineStep[] = [
   },
 ]
 
-/** Base URL for "Show code" links; set VITE_SOURCE_BASE_URL to the repository's file browser, e.g. ".../blob/master/". */
+/** Base URL for "Show code" links; set VITE_SOURCE_BASE_URL to the repository's file browser, e.g. ".../blob/main/". */
 const configuredSourceBase = import.meta.env.VITE_SOURCE_BASE_URL as string | undefined
 export const sourceBaseUrl: string | undefined =
   configuredSourceBase !== undefined && configuredSourceBase.length > 0
