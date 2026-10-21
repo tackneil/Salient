@@ -3,7 +3,7 @@
 Salient is a feature-detection lab: a pure C# SIFT implementation (rewritten from the owner's 2019 C++ coursework in `C:\Projects\SIFTDetector`, with its bugs fixed) behind an ASP.NET Core API and a React + MUI UI. OpenCV (OpenCvSharp) is used **only as a reference**: a small "Compare with OpenCV" dialog and reference curves in the robustness bench.
 
 - UI spec: the design mockup "Salient UI" — https://claude.ai/artifact/ELEMEwhtL9FsoABJ34DeDz (Main, Pipeline, Matching, Robustness and Compare artboards).
-- Decisions: `docs/adr/0001–0014` (index in `docs/adr/README.md`). Read the relevant ADR before changing architecture; amend it (with a dated note) when you deviate.
+- Decisions: `docs/adr/0001–0015` (index in `docs/adr/README.md`). Read the relevant ADR before changing architecture; amend it (with a dated note) when you deviate.
 - Plan and status: `docs/implementation-plan.md`. All phases 0–9 (milestones M1–M4) are done. CI (`.github/workflows/ci.yml`) has **never run**, because the repo has no remote.
 
 ## Working rules
@@ -62,6 +62,7 @@ After changing API contracts: build the API (it rewrites `web/openapi/Salient.Ap
 - **Cache versioning:** results are cached by a sha256 key. Bump `SiftDetector.Version` when detector output changes, and `RunService.ComparisonVersion` when comparison logic changes.
 - **Stage ids** (`SiftStages`, mirrored in `web/src/shared/stages.ts`) are a contract between the backend artifacts and the Pipeline view.
 - **SIFT correctness details** (the coursework got these wrong): signed DoG (no abs); contrast test on the [0,1] scale as |D(x̂)|·s ≥ threshold; central differences halved; refinement re-centres on the shifted sample; reject when det ≤ 0; incremental σ blur with a proper kernel size.
+- **Every view fits one viewport** (ADR-0015): the shell is `100dvh` and clips its overflow, so a view must fill what is left and shrink its cards instead of growing. `expectFitsViewport` in `web/e2e/helpers.ts` asserts it for each view; mark anything that clips on purpose with `data-clips-by-design`.
 - **JSON** uses `JsonNumberHandling.Strict`; otherwise OpenAPI types numbers as `number | string`.
 
 ## Gotchas
