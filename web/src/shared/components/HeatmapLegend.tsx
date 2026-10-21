@@ -1,5 +1,7 @@
 import Box from '@mui/material/Box'
+import Slider from '@mui/material/Slider'
 import Typography from '@mui/material/Typography'
+import { useId } from 'react'
 
 import { monoFontFamily } from '../../app/theme'
 import type { LayerLegend } from '../api/client'
@@ -13,19 +15,36 @@ const format = (value: number) => {
   return value.toPrecision(2)
 }
 
-/** Colorbar for a server-rendered layer (ADR-0006). */
-export function HeatmapLegend({ title, legend }: { title: string; legend: LayerLegend }) {
+/** Colorbar for a server-rendered layer (ADR-0006), with an optional opacity control for the layer. */
+export function HeatmapLegend({
+  title,
+  legend,
+  opacity,
+}: {
+  title: string
+  legend: LayerLegend
+  opacity?: { value: number; onChange: (value: number) => void }
+}) {
+  const labelId = useId()
   return (
     <Box
+      // Pointer events must not reach the viewer underneath, which would start panning.
+      onPointerDown={
+        opacity
+          ? (e) => {
+              e.stopPropagation()
+            }
+          : undefined
+      }
       sx={{
         p: 1,
         borderRadius: 1,
-        bgcolor: 'rgba(11,13,17,0.85)',
+        bgcolor: 'rgba(11,13,17,0.88)',
         display: 'flex',
         flexDirection: 'column',
         gap: 0.75,
-        minWidth: 200,
-        pointerEvents: 'none',
+        width: 210,
+        pointerEvents: opacity ? 'auto' : 'none',
       }}
     >
       <Typography sx={{ fontSize: 12, fontWeight: 600 }}>{title}</Typography>
@@ -43,6 +62,24 @@ export function HeatmapLegend({ title, legend }: { title: string; legend: LayerL
         {legend.scale === 'log' && <span>log</span>}
         <span>{legend.max >= 1000 ? `≥ ${format(legend.max)}` : format(legend.max)}</span>
       </Box>
+      {opacity && (
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25 }}>
+          <Typography variant="caption" color="text.secondary" id={labelId}>
+            Opacity
+          </Typography>
+          <Slider
+            size="small"
+            min={0.1}
+            max={1}
+            step={0.05}
+            value={opacity.value}
+            aria-labelledby={labelId}
+            onChange={(_, v) => {
+              opacity.onChange(Number(Array.isArray(v) ? v[0] : v))
+            }}
+          />
+        </Box>
+      )}
     </Box>
   )
 }

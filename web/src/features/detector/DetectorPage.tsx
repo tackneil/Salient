@@ -5,10 +5,10 @@ import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
 import MenuItem from '@mui/material/MenuItem'
 import Paper from '@mui/material/Paper'
-import Slider from '@mui/material/Slider'
 import TextField from '@mui/material/TextField'
 import ToggleButton from '@mui/material/ToggleButton'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
+import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { useCallback, useEffect, useMemo, useState, type KeyboardEvent } from 'react'
 
@@ -33,17 +33,12 @@ import { ParameterForm } from '../../shared/components/ParameterForm'
 import { RunProgressBar } from '../../shared/components/RunProgressBar'
 import { SampleGallery } from '../../shared/components/SampleGallery'
 import { Section } from '../../shared/components/Section'
-import { normalizeValues, parseSchema } from '../../shared/schema/parameterSchema'
+import { fillCardSx, sideColumnSx, viewSx, VIEW_GAP } from '../../shared/layout'
+import { defaultValues, normalizeValues, parseSchema } from '../../shared/schema/parameterSchema'
 import { SIFT_DETECTION_STAGES } from '../../shared/stages'
 import { PointGrid } from '../../shared/viewport/pointGrid'
 import { CompareDialog } from './CompareDialog'
-import {
-  filterFromParameters,
-  octaveGroup,
-  sameScaleSpace,
-  survivalCurve,
-  visibleIndices,
-} from './filtering'
+import { filterFromParameters, sameScaleSpace, survivalCurve, visibleIndices } from './filtering'
 import { KeypointInspector } from './KeypointInspector'
 import { ThresholdHistogram } from './ThresholdHistogram'
 import { TimingWaterfall } from './TimingWaterfall'
@@ -214,17 +209,6 @@ export function DetectorPage() {
     }
   }, [keypoints, contrastField, edgeField, filter])
 
-  const octaveCounts = useMemo(() => {
-    const counts = [0, 0, 0]
-    if (keypoints) {
-      for (const i of visibleIndices(keypoints, { ...filter, octaveGroup: undefined })) {
-        const k = keypoints[i]
-        if (k) counts[octaveGroup(k.octave)] = (counts[octaveGroup(k.octave)] ?? 0) + 1
-      }
-    }
-    return counts
-  }, [keypoints, filter])
-
   if (!imageId || !image.data) {
     return (
       <EmptyState
@@ -258,178 +242,195 @@ export function DetectorPage() {
   const heat = HEATMAPS.find((h) => h.id === heatmap)
   const heatLayer = run.data?.layers.find((l) => l.id === heatmap)
   const imageInfo = image.data
-  const peakOctave = Math.max(1, ...octaveCounts)
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+    <Box sx={viewSx}>
       <RunProgressBar
         run={run.data}
         expectedStages={algorithmId === 'sift' ? SIFT_DETECTION_STAGES : ['load', 'opencv']}
         title="Run"
+        detailsLabel="Show timing breakdown"
+        details={
+          run.data && run.data.stages.length > 0 ? (
+            <TimingWaterfall stages={run.data.stages} keypoints={visible.length} />
+          ) : undefined
+        }
       />
-      <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'flex-start', gap: 2 }}>
-        <Paper
-          variant="outlined"
-          component="section"
-          aria-label="Image viewer"
-          sx={{ flex: '999 1 640px', minWidth: 0, overflow: 'hidden' }}
+      <Box sx={{ flex: '1 1 0', minHeight: 0, display: 'flex', gap: VIEW_GAP }}>
+        <Box
+          sx={{
+            flex: '1 1 0',
+            minWidth: 0,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: VIEW_GAP,
+          }}
         >
-          <Box
-            sx={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              alignItems: 'center',
-              gap: '10px 12px',
-              px: 2,
-              py: 1.5,
-              borderBottom: 1,
-              borderColor: 'divider',
-            }}
-          >
-            <Chip
-              label={
-                <span>
-                  {imageInfo.fileName ?? 'image'}{' '}
-                  <Box
-                    component="span"
-                    sx={{ fontFamily: monoFontFamily, color: 'text.secondary', ml: 0.5 }}
-                  >
-                    {imageInfo.width} × {imageInfo.height}
-                  </Box>
-                </span>
-              }
-            />
-            <ToggleButtonGroup
-              size="small"
-              exclusive
-              value={heatmap}
-              onChange={(_, value: string | null) => {
-                if (value) setHeatmap(value)
-              }}
-              aria-label="Heatmap overlay"
-            >
-              {HEATMAPS.map((h) => (
-                <ToggleButton
-                  key={h.id}
-                  value={h.id}
-                  disabled={h.id !== 'none' && !run.data?.layers.some((l) => l.id === h.id)}
-                >
-                  {h.label}
-                </ToggleButton>
-              ))}
-            </ToggleButtonGroup>
-            {heatmap !== 'none' && (
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, width: 150 }}>
-                <Typography variant="caption" color="text.secondary" id="opacity-label">
-                  Opacity
-                </Typography>
-                <Slider
-                  size="small"
-                  min={0.1}
-                  max={1}
-                  step={0.05}
-                  value={heatOpacity}
-                  aria-labelledby="opacity-label"
-                  onChange={(_, v) => {
-                    setHeatOpacity(Number(Array.isArray(v) ? v[0] : v))
-                  }}
-                />
-              </Box>
-            )}
-            <ToggleButtonGroup
-              size="small"
-              exclusive
-              value={octave}
-              onChange={(_, value: string | null) => {
-                if (value) setOctave(value)
-              }}
-              aria-label="Octave filter"
-            >
-              {OCTAVE_FILTERS.map((o) => (
-                <ToggleButton key={o.value} value={o.value} sx={{ minWidth: 40 }}>
-                  {o.label}
-                </ToggleButton>
-              ))}
-            </ToggleButtonGroup>
-            <Box sx={{ flex: 1 }} />
-            <ToggleButton
-              size="small"
-              value="keypoints"
-              selected={showKeypoints}
-              onChange={() => {
-                setShowKeypoints((s) => !s)
+          <Paper variant="outlined" component="section" aria-label="Image viewer" sx={fillCardSx}>
+            <Box
+              sx={{
+                flex: '0 0 auto',
+                display: 'flex',
+                flexWrap: 'nowrap',
+                alignItems: 'center',
+                gap: 1.5,
+                px: 1.5,
+                py: 1,
+                borderBottom: 1,
+                borderColor: 'divider',
+                overflowX: 'auto',
+                '& > *': { flex: '0 0 auto' },
               }}
             >
-              Keypoints
-            </ToggleButton>
-            {canCompare && (
-              <Button
+              <Chip
+                label={
+                  <span>
+                    {imageInfo.fileName ?? 'image'}{' '}
+                    <Box
+                      component="span"
+                      sx={{ fontFamily: monoFontFamily, color: 'text.secondary', ml: 0.5 }}
+                    >
+                      {imageInfo.width} × {imageInfo.height}
+                    </Box>
+                  </span>
+                }
+              />
+              <ToggleButtonGroup
                 size="small"
-                variant="outlined"
-                color="inherit"
-                startIcon={<CompareIcon />}
-                onClick={() => {
-                  setCompareOpen(true)
+                exclusive
+                value={heatmap}
+                onChange={(_, value: string | null) => {
+                  if (value) setHeatmap(value)
                 }}
-                sx={{ borderColor: tokens.borderStrong, color: 'text.secondary' }}
+                aria-label="Heatmap overlay"
               >
-                Compare with OpenCV
-              </Button>
-            )}
-          </Box>
-          <Box sx={{ p: 2.5, bgcolor: '#0b0d11', position: 'relative' }}>
-            <ImageStage
-              imageSize={{ width: imageInfo.width, height: imageInfo.height }}
-              label="Image with keypoints. Click a keypoint to inspect it; arrow keys move the selection."
-              onImageClick={(p) => {
-                setSelected(grid?.nearest(p.x, p.y, 25))
-              }}
-              onKeyDown={onStageKey}
+                {HEATMAPS.map((h) => (
+                  <ToggleButton
+                    key={h.id}
+                    value={h.id}
+                    disabled={h.id !== 'none' && !run.data?.layers.some((l) => l.id === h.id)}
+                    sx={{ whiteSpace: 'nowrap' }}
+                  >
+                    {h.label}
+                  </ToggleButton>
+                ))}
+              </ToggleButtonGroup>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Typography variant="body2" color="text.secondary" id="octave-label">
+                  Octave
+                </Typography>
+                <ToggleButtonGroup
+                  size="small"
+                  exclusive
+                  value={octave}
+                  onChange={(_, value: string | null) => {
+                    if (value) setOctave(value)
+                  }}
+                  aria-labelledby="octave-label"
+                >
+                  {OCTAVE_FILTERS.map((o) => (
+                    <ToggleButton key={o.value} value={o.value} sx={{ minWidth: 40 }}>
+                      {o.label}
+                    </ToggleButton>
+                  ))}
+                </ToggleButtonGroup>
+              </Box>
+              <Box sx={{ flex: '1 1 0 !important' }} />
+              <ToggleButton
+                size="small"
+                value="keypoints"
+                selected={showKeypoints}
+                onChange={() => {
+                  setShowKeypoints((s) => !s)
+                }}
+                sx={{ gap: 1, whiteSpace: 'nowrap' }}
+              >
+                Keypoints
+                <Box component="span" sx={{ fontFamily: monoFontFamily, color: 'text.secondary' }}>
+                  {visible.length}
+                </Box>
+              </ToggleButton>
+              {canCompare && (
+                <Tooltip title="Compare with OpenCV">
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    color="inherit"
+                    aria-label="Compare with OpenCV"
+                    startIcon={<CompareIcon />}
+                    onClick={() => {
+                      setCompareOpen(true)
+                    }}
+                    sx={{ borderColor: tokens.borderStrong, color: 'text.secondary' }}
+                  >
+                    Compare
+                  </Button>
+                </Tooltip>
+              )}
+            </Box>
+            <Box
+              sx={{ flex: '1 1 0', minHeight: 0, p: 1.5, bgcolor: '#0b0d11', position: 'relative' }}
             >
-              {(view) => (
-                <>
-                  <StageImage
-                    src={imageContentUrl(imageId)}
-                    size={imageInfo}
-                    view={view}
-                    alt="Uploaded image"
-                    filter="brightness(0.7) saturate(0.6)"
-                  />
-                  {heatLayer && detectionRunId && (
+              <ImageStage
+                fill
+                imageSize={{ width: imageInfo.width, height: imageInfo.height }}
+                label="Image with keypoints. Click a keypoint to inspect it; arrow keys move the selection."
+                onImageClick={(p) => {
+                  setSelected(grid?.nearest(p.x, p.y, 25))
+                }}
+                onKeyDown={onStageKey}
+              >
+                {(view) => (
+                  <>
                     <StageImage
-                      src={layerUrl(detectionRunId, heatLayer.id)}
+                      src={imageContentUrl(imageId)}
                       size={imageInfo}
                       view={view}
-                      opacity={heatOpacity}
+                      alt="Uploaded image"
+                      filter="brightness(0.7) saturate(0.6)"
                     />
-                  )}
-                  <CanvasLayer transform={view.transform} size={view.container} draw={draw} />
-                  {heatLayer && heat && (
-                    <Box sx={{ position: 'absolute', left: 12, bottom: 12 }}>
-                      <HeatmapLegend title={heat.title} legend={heatLayer.legend} />
-                    </Box>
-                  )}
-                </>
+                    {heatLayer && detectionRunId && (
+                      <StageImage
+                        src={layerUrl(detectionRunId, heatLayer.id)}
+                        size={imageInfo}
+                        view={view}
+                        opacity={heatOpacity}
+                      />
+                    )}
+                    <CanvasLayer transform={view.transform} size={view.container} draw={draw} />
+                  </>
+                )}
+              </ImageStage>
+              {heatLayer && heat && (
+                <Box sx={{ position: 'absolute', left: 24, bottom: 24 }}>
+                  <HeatmapLegend
+                    title={heat.title}
+                    legend={heatLayer.legend}
+                    opacity={{ value: heatOpacity, onChange: setHeatOpacity }}
+                  />
+                </Box>
               )}
-            </ImageStage>
-          </Box>
-          <Box sx={{ px: 2, py: 1.75, borderTop: 1, borderColor: 'divider' }}>
-            {run.data && run.data.stages.length > 0 ? (
-              <TimingWaterfall stages={run.data.stages} keypoints={visible.length} />
-            ) : (
-              <Typography variant="caption" color="text.secondary">
-                Starting the detector…
-              </Typography>
-            )}
-          </Box>
-        </Paper>
+            </Box>
+          </Paper>
 
-        <Box
-          component="aside"
-          aria-label="Algorithm settings"
-          sx={{ flex: '1 1 360px', minWidth: 0, display: 'flex', flexDirection: 'column', gap: 2 }}
-        >
-          <Section title="Algorithm">
+          {selected !== undefined && selectedKeypoint && detectionRunId && (
+            <KeypointInspector
+              runId={detectionRunId}
+              imageId={imageId}
+              index={selected}
+              keypoint={selectedKeypoint}
+              onPrevious={() => {
+                stepSelection(-1)
+              }}
+              onNext={() => {
+                stepSelection(1)
+              }}
+            />
+          )}
+        </Box>
+
+        <Box component="aside" aria-label="Algorithm settings" sx={sideColumnSx(360)}>
+          <Section title="Algorithm" gap={1.25}>
             <TextField
               select
               size="small"
@@ -445,20 +446,9 @@ export function DetectorPage() {
                 </MenuItem>
               ))}
             </TextField>
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 0.75 }}>
-              <Typography variant="caption" color="text.secondary" sx={{ mr: 0.5 }}>
-                Coming soon:
-              </Typography>
-              {COMING_SOON.map((name) => (
-                <Chip
-                  key={name}
-                  size="small"
-                  label={name}
-                  variant="outlined"
-                  sx={{ borderStyle: 'dashed', color: 'text.secondary' }}
-                />
-              ))}
-            </Box>
+            <Typography variant="caption" color="text.secondary">
+              Coming soon: {COMING_SOON.join(' · ')}
+            </Typography>
           </Section>
 
           <Section title="Parameters">
@@ -478,6 +468,7 @@ export function DetectorPage() {
                           max={contrastField.maximum ?? 0.1}
                           value={Number(values.contrastThreshold)}
                           currentCount={visible.length}
+                          height={72}
                         />
                       ),
                       edgeThreshold: (
@@ -487,94 +478,44 @@ export function DetectorPage() {
                           max={edgeField.maximum ?? 30}
                           value={Number(values.edgeThreshold)}
                           currentCount={visible.length}
-                          height={40}
+                          height={48}
                         />
                       ),
                     }
                   : undefined
               }
             />
-            <Button
-              variant="contained"
-              size="large"
-              startIcon={<PlayArrowIcon />}
-              onClick={startRun}
-              disabled={busy}
-              color={stale ? 'secondary' : 'primary'}
-            >
-              {busy ? 'Running…' : stale ? 'Run with new scale space' : 'Run again'}
-            </Button>
-            <Typography variant="caption" color="text.secondary">
-              Thresholds apply instantly; other parameters need a new run.
-            </Typography>
+            <Box sx={{ display: 'flex', gap: 1 }}>
+              <Tooltip title="Thresholds apply instantly; other parameters need a new run.">
+                <Box component="span" sx={{ flex: 1, display: 'flex' }}>
+                  <Button
+                    variant="contained"
+                    size="large"
+                    fullWidth
+                    startIcon={<PlayArrowIcon />}
+                    onClick={startRun}
+                    disabled={busy}
+                    color={stale ? 'secondary' : 'primary'}
+                  >
+                    {busy ? 'Running…' : stale ? 'Run with new scale space' : 'Run again'}
+                  </Button>
+                </Box>
+              </Tooltip>
+              <Button
+                size="large"
+                onClick={() => {
+                  setParameters(algorithmId, defaultValues(fields))
+                }}
+              >
+                Reset
+              </Button>
+            </Box>
             {create.error && (
               <Typography color="error" variant="body2" role="alert">
                 {create.error.message}
               </Typography>
             )}
           </Section>
-
-          {keypoints && (
-            <Section
-              title="Result"
-              action={
-                <Typography sx={{ fontFamily: monoFontFamily, fontSize: 22 }}>
-                  {visible.length}
-                </Typography>
-              }
-            >
-              {octaveCounts.map((count, i) => {
-                const label = OCTAVE_FILTERS[i + 1]?.label ?? String(i + 1)
-                return (
-                  <Box
-                    key={label}
-                    sx={{
-                      display: 'grid',
-                      gridTemplateColumns: '76px 1fr 40px',
-                      alignItems: 'center',
-                      gap: 1.25,
-                    }}
-                  >
-                    <Typography variant="body2" color="text.secondary">
-                      Octave {label}
-                    </Typography>
-                    <Box
-                      sx={{ height: 8, borderRadius: 1, bgcolor: '#222733', overflow: 'hidden' }}
-                    >
-                      <Box
-                        sx={{
-                          height: '100%',
-                          width: `${(count / peakOctave) * 100}%`,
-                          bgcolor: octaveColor(i),
-                          borderRadius: 1,
-                        }}
-                      />
-                    </Box>
-                    <Typography
-                      sx={{ fontFamily: monoFontFamily, fontSize: 13, textAlign: 'right' }}
-                    >
-                      {count}
-                    </Typography>
-                  </Box>
-                )
-              })}
-            </Section>
-          )}
-
-          {selected !== undefined && selectedKeypoint && detectionRunId && (
-            <KeypointInspector
-              runId={detectionRunId}
-              imageId={imageId}
-              index={selected}
-              keypoint={selectedKeypoint}
-              onPrevious={() => {
-                stepSelection(-1)
-              }}
-              onNext={() => {
-                stepSelection(1)
-              }}
-            />
-          )}
         </Box>
       </Box>
       {canCompare && compareOpen && (

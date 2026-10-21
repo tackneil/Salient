@@ -42,7 +42,10 @@ interface ImageStageProps {
   onImageClick?: (point: Point) => void
   onKeyDown?: (event: KeyboardEvent<HTMLDivElement>) => void
   label: string
+  /** Caps the height of a stage that sizes itself from the image's aspect ratio. Ignored with `fill`. */
   maxHeight?: number | string
+  /** Fills the parent in both directions instead of following the image's aspect ratio; the image is fitted inside. */
+  fill?: boolean
 }
 
 const DRAG_THRESHOLD = 4
@@ -58,6 +61,7 @@ export function ImageStage({
   onKeyDown,
   label,
   maxHeight = '72vh',
+  fill = false,
 }: ImageStageProps) {
   const ref = useRef<HTMLDivElement>(null)
   const [container, setContainer] = useState<Size>({ width: 0, height: 0 })
@@ -161,7 +165,7 @@ export function ImageStage({
     container.width > 0 ? Math.round(relativeZoom(view, container, imageSize) * 100) : 100
 
   return (
-    <Box sx={{ position: 'relative', width: '100%' }}>
+    <Box sx={{ position: 'relative', width: '100%', height: fill ? '100%' : undefined }}>
       <Box
         ref={ref}
         role="application"
@@ -175,8 +179,12 @@ export function ImageStage({
         sx={{
           position: 'relative',
           width: '100%',
-          aspectRatio: `${String(imageSize.width)} / ${String(imageSize.height)}`,
-          maxHeight,
+          ...(fill
+            ? { height: '100%' }
+            : {
+                aspectRatio: `${String(imageSize.width)} / ${String(imageSize.height)}`,
+                maxHeight,
+              }),
           overflow: 'hidden',
           borderRadius: 1,
           bgcolor: '#0b0d11',

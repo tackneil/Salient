@@ -1,11 +1,13 @@
 import { expect, test } from '@playwright/test'
 
-import { loadSample } from './helpers'
+import { expectFitsViewport, loadSample } from './helpers'
 
 test('detect keypoints and inspect one with the keyboard', async ({ page }) => {
   await loadSample(page)
 
+  await page.getByRole('button', { name: 'Show timing breakdown' }).click()
   await expect(page.getByText('Timing')).toBeVisible()
+  await page.keyboard.press('Escape')
   await page.getByRole('button', { name: 'Edge ratio' }).click()
   await expect(page.getByText('Edge ratio tr²(H) / det(H)')).toBeVisible()
 
@@ -19,6 +21,7 @@ test('detect keypoints and inspect one with the keyboard', async ({ page }) => {
   await expect(inspector.first()).toBeVisible()
   await expect(page.getByRole('img', { name: 'Orientation histogram' })).toBeVisible()
   await expect(page.getByRole('img', { name: 'Descriptor as 16 orientation roses' })).toBeVisible()
+  await expectFitsViewport(page)
 })
 
 test('step through the pipeline', async ({ page }) => {

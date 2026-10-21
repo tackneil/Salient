@@ -2,6 +2,7 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
+import Paper from '@mui/material/Paper'
 import Skeleton from '@mui/material/Skeleton'
 import Typography from '@mui/material/Typography'
 import { useEffect, useRef } from 'react'
@@ -11,9 +12,8 @@ import { monoFontFamily, tokens } from '../../app/theme'
 import { imageContentUrl, type KeypointDto } from '../../shared/api/client'
 import { useKeypoint } from '../../shared/api/queries'
 import { drawRotatedSquare } from '../../shared/canvas/draw'
-import { Section } from '../../shared/components/Section'
 
-const PATCH_SIZE = 132
+const PATCH_SIZE = 120
 
 interface KeypointInspectorProps {
   runId: string
@@ -36,21 +36,50 @@ export function KeypointInspector({
   const detail = useKeypoint(runId, index)
 
   return (
-    <Section
-      title={`Keypoint #${index + 1}`}
-      action={
-        <Box sx={{ display: 'flex', gap: 0.5 }}>
-          <IconButton size="small" aria-label="Previous keypoint" onClick={onPrevious}>
-            <ChevronLeftIcon fontSize="small" />
-          </IconButton>
-          <IconButton size="small" aria-label="Next keypoint" onClick={onNext}>
-            <ChevronRightIcon fontSize="small" />
-          </IconButton>
-        </Box>
-      }
+    <Paper
+      variant="outlined"
+      component="section"
+      aria-label={`Keypoint #${String(index + 1)}`}
+      sx={{
+        flex: '0 0 auto',
+        px: 2,
+        pt: 1.25,
+        pb: 1.75,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 1.25,
+      }}
     >
-      <Box sx={{ display: 'flex', gap: 1.75, alignItems: 'flex-start' }}>
-        <Box component="figure" sx={{ m: 0, display: 'flex', flexDirection: 'column', gap: 0.75 }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <Typography
+          variant="overline"
+          component="h2"
+          color="text.secondary"
+          sx={{ lineHeight: 1.5 }}
+        >
+          Keypoint #{index + 1}
+        </Typography>
+        <IconButton size="small" aria-label="Previous keypoint" onClick={onPrevious}>
+          <ChevronLeftIcon fontSize="small" />
+        </IconButton>
+        <IconButton size="small" aria-label="Next keypoint" onClick={onNext}>
+          <ChevronRightIcon fontSize="small" />
+        </IconButton>
+        <Box sx={{ flex: 1 }} />
+        <Typography
+          component={RouterLink}
+          to="/pipeline"
+          sx={{ fontSize: 13, color: 'primary.main', textDecoration: 'none', whiteSpace: 'nowrap' }}
+        >
+          Trace keypoints through the pipeline →
+        </Typography>
+      </Box>
+
+      <Box sx={{ display: 'flex', gap: 2.5, alignItems: 'flex-start' }}>
+        <Box
+          component="figure"
+          sx={{ flex: '0 0 auto', m: 0, display: 'flex', flexDirection: 'column', gap: 0.5 }}
+        >
           <Patch imageId={imageId} keypoint={keypoint} />
           <Typography component="figcaption" variant="caption" color="text.secondary">
             Patch · descriptor window
@@ -59,10 +88,10 @@ export function KeypointInspector({
         <Box
           component="dl"
           sx={{
+            flex: '0 0 190px',
             m: 0,
-            flex: 1,
             display: 'grid',
-            gridTemplateColumns: 'auto 1fr',
+            gridTemplateColumns: 'auto minmax(0, 1fr)',
             gap: '6px 10px',
             fontSize: 12,
           }}
@@ -86,32 +115,28 @@ export function KeypointInspector({
             }
           />
         </Box>
+
+        <Box sx={{ flex: '1 1 0', minWidth: 0 }}>
+          {detail.data?.orientationHistogram ? (
+            <OrientationHistogram bins={detail.data.orientationHistogram} />
+          ) : detail.isLoading ? (
+            <Skeleton variant="rounded" height={PATCH_SIZE} />
+          ) : null}
+        </Box>
+
+        <Box sx={{ flex: '0 0 auto', width: PATCH_SIZE }}>
+          {detail.data?.descriptor ? (
+            <DescriptorRoses values={detail.data.descriptor} />
+          ) : detail.data?.binaryDescriptor ? (
+            <Typography variant="caption" color="text.secondary">
+              Binary descriptor · {detail.data.binaryDescriptor.length * 8} bits
+            </Typography>
+          ) : detail.isLoading ? (
+            <Skeleton variant="rounded" height={PATCH_SIZE} />
+          ) : null}
+        </Box>
       </Box>
-
-      {detail.data?.orientationHistogram ? (
-        <OrientationHistogram bins={detail.data.orientationHistogram} />
-      ) : detail.isLoading ? (
-        <Skeleton variant="rounded" height={84} />
-      ) : null}
-
-      {detail.data?.descriptor ? (
-        <DescriptorRoses values={detail.data.descriptor} />
-      ) : detail.data?.binaryDescriptor ? (
-        <Typography variant="caption" color="text.secondary">
-          Binary descriptor · {detail.data.binaryDescriptor.length * 8} bits
-        </Typography>
-      ) : detail.isLoading ? (
-        <Skeleton variant="rounded" height={160} />
-      ) : null}
-
-      <Typography
-        component={RouterLink}
-        to="/pipeline"
-        sx={{ fontSize: 13, color: 'primary.main', textDecoration: 'none' }}
-      >
-        Trace keypoints through the pipeline →
-      </Typography>
-    </Section>
+    </Paper>
   )
 }
 
@@ -208,7 +233,7 @@ function OrientationHistogram({ bins }: { bins: readonly number[] }) {
         aria-label="Orientation histogram"
         sx={{
           position: 'relative',
-          height: 64,
+          height: 84,
           display: 'flex',
           alignItems: 'flex-end',
           gap: '2px',
@@ -261,13 +286,7 @@ function DescriptorRoses({ values }: { values: readonly number[] }) {
   const max = Math.max(1e-9, ...values)
   const cells = Array.from({ length: 16 }, (_, c) => values.slice(c * 8, c * 8 + 8))
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.75 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-        <Typography sx={{ fontSize: 12, fontWeight: 600 }}>Descriptor</Typography>
-        <Typography variant="caption" color="text.secondary">
-          4 × 4 cells × 8 orientations = {values.length}-D
-        </Typography>
-      </Box>
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
       <Box
         role="img"
         aria-label="Descriptor as 16 orientation roses"
@@ -308,6 +327,9 @@ function DescriptorRoses({ values }: { values: readonly number[] }) {
           </Box>
         ))}
       </Box>
+      <Typography variant="caption" color="text.secondary">
+        Descriptor · {values.length}-D
+      </Typography>
     </Box>
   )
 }

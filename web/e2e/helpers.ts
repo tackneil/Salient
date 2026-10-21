@@ -8,3 +8,39 @@ export async function loadSample(page: Page, title = 'Synthetic scene') {
     timeout: 90_000,
   })
 }
+
+/**
+ * Every view must fit one viewport (ADR-0015): the page itself never scrolls and no card clips or scrolls its own
+ * content. The image stage and its canvases are exempt, because they clip a zoomable image by design.
+ */
+export async function expectFitsViewport(page: Page) {
+  const problems = await page.evaluate(() => {
+    const found: string[] = []
+    const root = document.documentElement
+    if (root.scrollHeight > window.innerHeight + 1) found.push('page scrolls vertically')
+    if (root.scrollWidth > window.innerWidth + 1) found.push('page scrolls horizontally')
+    for (const element of document.querySelectorAll<HTMLElement>('main *')) {
+      // Form internals that MUI clips on purpose (slider inputs, the label notch of an outlined field).
+      if (['INPUT', 'LEGEND', 'FIELDSET'].includes(element.tagName)) continue
+      if (element.closest('[role="application"], [role="presentation"], canvas')) continue
+      // Content pushed below the viewport by the shell's own clipping.
+      if (element.getBoundingClientRect().bottom > window.innerHeight + 1) {
+        let clipped = false
+        for (let a = element.parentElement; a && a.tagName !== 'MAIN'; a = a.parentElement) {
+          if (getComputedStyle(a).overflowY !== 'visible') clipped = true
+        }
+        if (!clipped) found.push(`${element.tagName.toLowerCase()} runs below the viewport`)
+      }
+      const style = getComputedStyle(element)
+      const clipsY = ['auto', 'scroll', 'hidden'].includes(style.overflowY)
+      if (clipsY && element.clientHeight > 0 && element.scrollHeight > element.clientHeight + 1) {
+        const name = element.getAttribute('aria-label') ?? element.tagName.toLowerCase()
+        found.push(
+          `${name} clips ${String(element.scrollHeight - element.clientHeight)}px vertically`,
+        )
+      }
+    }
+    return found
+  })
+  expect(problems).toEqual([])
+}

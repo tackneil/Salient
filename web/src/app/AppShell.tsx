@@ -99,9 +99,17 @@ export function AppShell() {
   }
 
   return (
-    <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <AppBar position="static">
-        <Toolbar sx={{ gap: 3, flexWrap: 'wrap', minHeight: 64 }}>
+    <Box
+      sx={{
+        height: '100dvh',
+        minHeight: 560,
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
+      }}
+    >
+      <AppBar position="static" sx={{ flex: '0 0 auto' }}>
+        <Toolbar sx={{ gap: 3, flexWrap: 'nowrap', minHeight: 56 }}>
           <SalientLogo />
           <Tabs value={current} aria-label="Sections" sx={{ alignSelf: 'stretch' }}>
             {sections.map((s) => (
@@ -134,7 +142,18 @@ export function AppShell() {
       </AppBar>
       <Box
         component="main"
-        sx={{ flex: 1, width: '100%', maxWidth: 1680, mx: 'auto', p: 2, boxSizing: 'border-box' }}
+        sx={{
+          flex: 1,
+          minHeight: 0,
+          display: 'flex',
+          flexDirection: 'column',
+          width: '100%',
+          maxWidth: 1680,
+          mx: 'auto',
+          px: 2,
+          py: 1.5,
+          boxSizing: 'border-box',
+        }}
       >
         <Outlet />
       </Box>

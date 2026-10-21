@@ -56,7 +56,7 @@ export const theme = createTheme({
       defaultProps: { disableElevation: true },
     },
     MuiTab: {
-      styleOverrides: { root: { textTransform: 'none', fontWeight: 500, minHeight: 64 } },
+      styleOverrides: { root: { textTransform: 'none', fontWeight: 500, minHeight: 56 } },
     },
   },
 })

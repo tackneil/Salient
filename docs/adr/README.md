@@ -18,6 +18,7 @@ This folder records the significant architectural decisions for Salient. Each re
 | 0012 | [Testing strategy](0012-testing-strategy.md)                              | Accepted |
 | 0013 | [Deployment](0013-deployment.md)                                          | Accepted |
 | 0014 | [Project conventions](0014-project-conventions.md)                        | Accepted |
+| 0015 | [Every view fits one viewport](0015-single-viewport-layout.md)            | Accepted |
 
 ## Template
 
