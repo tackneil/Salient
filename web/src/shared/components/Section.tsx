@@ -9,17 +9,26 @@ export function Section({
   action,
   children,
   gap = 1.75,
+  grow = false,
 }: {
   title: string
   action?: ReactNode
   children: ReactNode
   gap?: number
+  /** Takes the remaining height of its column, so content inside may stretch (ADR-0015). */
+  grow?: boolean
 }) {
   return (
     <Paper
       variant="outlined"
       component="section"
-      sx={{ p: 2, display: 'flex', flexDirection: 'column', gap }}
+      sx={{
+        p: 2,
+        display: 'flex',
+        flexDirection: 'column',
+        gap,
+        ...(grow ? { flex: '1 1 0', minHeight: 0 } : {}),
+      }}
     >
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 1 }}>
         <Typography

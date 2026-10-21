@@ -30,8 +30,10 @@ import { useRunProgress } from '../../shared/api/realtime'
 import { drawLines, type LineShape } from '../../shared/canvas/draw'
 import { CanvasLayer, type DrawFunction } from '../../shared/components/CanvasLayer'
 import { EmptyState } from '../../shared/components/EmptyState'
+import { InfoHint } from '../../shared/components/ParameterForm'
 import { RunProgressBar } from '../../shared/components/RunProgressBar'
 import { Section } from '../../shared/components/Section'
+import { fillCardSx, sideColumnSx, viewSx, VIEW_GAP } from '../../shared/layout'
 import { createRotatedCopy } from './testPair'
 
 const OUTLIER = '#ff7a93'
@@ -121,124 +123,135 @@ export function MatchingPage() {
   const busy = create.isPending || run.data?.status === 'running' || run.data?.status === 'queued'
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+    <Box sx={viewSx}>
       <RunProgressBar
         run={run.data}
         expectedStages={['load-a', 'load-b', 'matching', 'ransac']}
         title="Match"
       />
-      <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'flex-start', gap: 2 }}>
-        <Paper
-          variant="outlined"
-          component="section"
-          aria-label="Image matching"
-          sx={{ flex: '999 1 640px', minWidth: 0, overflow: 'hidden' }}
-        >
-          <Box
-            sx={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              alignItems: 'center',
-              gap: 1.5,
-              px: 2,
-              py: 1.5,
-              borderBottom: 1,
-              borderColor: 'divider',
-            }}
-          >
-            <Chip label={<NameLabel tag="A" image={imageA.data} />} />
-            <Chip
-              label={imageB.data ? <NameLabel tag="B" image={imageB.data} /> : 'B · not chosen'}
-              variant={imageB.data ? 'filled' : 'outlined'}
-            />
-            <input
-              ref={fileInput}
-              type="file"
-              accept="image/png,image/jpeg,image/webp,image/gif,image/bmp"
-              hidden
-              onChange={(e) => {
-                const file = e.target.files?.[0]
-                if (file) uploadB(file)
-                e.target.value = ''
-              }}
-            />
-            <Button
-              size="small"
-              variant="outlined"
-              color="inherit"
-              startIcon={<UploadIcon />}
-              onClick={() => fileInput.current?.click()}
-              disabled={upload.isPending}
-            >
-              Upload image B
-            </Button>
-            <Button
-              size="small"
-              variant="outlined"
-              color="inherit"
-              startIcon={<AutoFixHighIcon />}
-              onClick={() => void createTestPair()}
-              disabled={upload.isPending}
-            >
-              Test pair: 10°, ×0.85
-            </Button>
-            <Box sx={{ flex: 1 }} />
-            <ToggleButton
-              size="small"
-              value="lines"
-              selected={showLines}
-              onChange={() => {
-                setShowLines((s) => !s)
-              }}
-            >
-              Match lines
-            </ToggleButton>
-          </Box>
-          <Box sx={{ p: 2.5, bgcolor: '#0b0d11' }}>
-            {imageB.data ? (
-              <PairView
-                a={imageA.data}
-                b={imageB.data}
-                result={result.data}
-                ratio={ratio}
-                ransac={ransac}
-                showLines={showLines}
-              />
-            ) : (
-              <Typography color="text.secondary" sx={{ py: 8, textAlign: 'center' }}>
-                Upload a second image, or create a rotated and scaled copy of the first one.
-              </Typography>
-            )}
-          </Box>
-          <Box
-            sx={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              gap: '8px 20px',
-              px: 2,
-              py: 1.25,
-              borderTop: 1,
-              borderColor: 'divider',
-              fontSize: 12,
-              color: 'text.secondary',
-            }}
-          >
-            <LegendLine color={tokens.primary} label={ransac ? 'inliers' : 'matches'} />
-            {ransac && <LegendLine color={OUTLIER} label="RANSAC outliers" dashed />}
-            {result.data && (
-              <Typography sx={{ ml: 'auto', fontFamily: monoFontFamily, fontSize: 12 }}>
-                {result.data.keypointsA.length} / {result.data.keypointsB.length} keypoints
-              </Typography>
-            )}
-          </Box>
-        </Paper>
-
+      <Box sx={{ flex: '1 1 0', minHeight: 0, display: 'flex', gap: VIEW_GAP }}>
         <Box
-          component="aside"
-          aria-label="Matching parameters"
-          sx={{ flex: '1 1 340px', minWidth: 0, display: 'flex', flexDirection: 'column', gap: 2 }}
+          sx={{
+            flex: '1 1 0',
+            minWidth: 0,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: VIEW_GAP,
+          }}
         >
-          <Section title="Parameters" gap={2}>
+          <Paper variant="outlined" component="section" aria-label="Image matching" sx={fillCardSx}>
+            <Box
+              sx={{
+                flex: '0 0 auto',
+                display: 'flex',
+                flexWrap: 'nowrap',
+                alignItems: 'center',
+                gap: 1.5,
+                px: 1.5,
+                py: 1,
+                borderBottom: 1,
+                borderColor: 'divider',
+                overflowX: 'auto',
+                '& > *': { flex: '0 0 auto' },
+              }}
+            >
+              <Chip label={<NameLabel tag="A" image={imageA.data} />} />
+              <Chip
+                label={imageB.data ? <NameLabel tag="B" image={imageB.data} /> : 'B · not chosen'}
+                variant={imageB.data ? 'filled' : 'outlined'}
+              />
+              <input
+                ref={fileInput}
+                type="file"
+                accept="image/png,image/jpeg,image/webp,image/gif,image/bmp"
+                hidden
+                onChange={(e) => {
+                  const file = e.target.files?.[0]
+                  if (file) uploadB(file)
+                  e.target.value = ''
+                }}
+              />
+              <Button
+                size="small"
+                variant="outlined"
+                color="inherit"
+                startIcon={<UploadIcon />}
+                onClick={() => fileInput.current?.click()}
+                disabled={upload.isPending}
+                sx={{ whiteSpace: 'nowrap' }}
+              >
+                Upload image B
+              </Button>
+              <Button
+                size="small"
+                variant="outlined"
+                color="inherit"
+                startIcon={<AutoFixHighIcon />}
+                onClick={() => void createTestPair()}
+                disabled={upload.isPending}
+                sx={{ whiteSpace: 'nowrap' }}
+              >
+                Test pair: 10°, ×0.85
+              </Button>
+              <Box sx={{ flex: '1 1 0 !important' }} />
+              <ToggleButton
+                size="small"
+                value="lines"
+                selected={showLines}
+                onChange={() => {
+                  setShowLines((s) => !s)
+                }}
+                sx={{ whiteSpace: 'nowrap' }}
+              >
+                Match lines
+              </ToggleButton>
+            </Box>
+            <Box sx={{ flex: '1 1 0', minHeight: 0, p: 1.5, bgcolor: '#0b0d11' }}>
+              {imageB.data ? (
+                <PairView
+                  a={imageA.data}
+                  b={imageB.data}
+                  result={result.data}
+                  ratio={ratio}
+                  ransac={ransac}
+                  showLines={showLines}
+                />
+              ) : (
+                <Typography color="text.secondary" sx={{ py: 8, textAlign: 'center' }}>
+                  Upload a second image, or create a rotated and scaled copy of the first one.
+                </Typography>
+              )}
+            </Box>
+            <Box
+              sx={{
+                flex: '0 0 auto',
+                display: 'flex',
+                flexWrap: 'nowrap',
+                alignItems: 'center',
+                gap: 2.5,
+                px: 2,
+                py: 1,
+                borderTop: 1,
+                borderColor: 'divider',
+                fontSize: 12,
+                color: 'text.secondary',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              <LegendLine color={tokens.primary} label={ransac ? 'inliers' : 'matches'} />
+              {ransac && <LegendLine color={OUTLIER} label="RANSAC outliers" dashed />}
+              {result.data && (
+                <Typography sx={{ ml: 'auto', fontFamily: monoFontFamily, fontSize: 12 }}>
+                  {result.data.keypointsA.length} / {result.data.keypointsB.length} keypoints
+                </Typography>
+              )}
+            </Box>
+          </Paper>
+          {result.data && <ResultStrip result={result.data} ratio={ratio} ransac={ransac} />}
+        </Box>
+
+        <Box component="aside" aria-label="Matching parameters" sx={sideColumnSx(360)}>
+          <Section title="Parameters" gap={2} grow>
             <TextField
               select
               size="small"
@@ -254,20 +267,34 @@ export function MatchingPage() {
                 </MenuItem>
               ))}
             </TextField>
-            <Box>
+            <Box
+              sx={{
+                flex: '0 0 auto',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 0.5,
+              }}
+            >
               <Box
                 sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}
               >
-                <Typography id="ratio-label" sx={{ fontWeight: 500 }}>
-                  Lowe’s ratio test
-                </Typography>
+                <Box sx={{ display: 'inline-flex', alignItems: 'baseline', gap: 0.5 }}>
+                  <Typography component="label" id="ratio-label" sx={{ fontWeight: 500 }}>
+                    Lowe’s ratio test
+                  </Typography>
+                  <InfoHint text="Accept when d₁ / d₂ is below the threshold. Bars: correct (blue) and wrong (pink) matches per ratio bin." />
+                </Box>
                 <Typography
                   sx={{ fontFamily: monoFontFamily, fontSize: 13, color: 'primary.main' }}
                 >
                   {ratio.toFixed(2)}
                 </Typography>
               </Box>
-              {result.data && <RatioHistogram result={result.data} ratio={ratio} />}
+              {result.data ? (
+                <RatioHistogram result={result.data} ratio={ratio} />
+              ) : (
+                <Box sx={{ height: 120 }} />
+              )}
               <Slider
                 size="small"
                 min={0.3}
@@ -279,11 +306,8 @@ export function MatchingPage() {
                   setRatio(Number(Array.isArray(v) ? v[0] : v))
                 }}
               />
-              <Typography variant="caption" color="text.secondary">
-                Accept when d₁ / d₂ is below the threshold. Bars: correct (blue) and wrong (pink)
-                matches per ratio bin.
-              </Typography>
             </Box>
+            <Box sx={{ flex: 1 }} />
             <FormControlLabel
               control={
                 <Switch
@@ -317,7 +341,6 @@ export function MatchingPage() {
               </Typography>
             )}
           </Section>
-          {result.data && <ResultCard result={result.data} ratio={ratio} ransac={ransac} />}
         </Box>
       </Box>
     </Box>
@@ -344,7 +367,7 @@ function LegendLine({ color, label, dashed }: { color: string; label: string; da
   )
 }
 
-/** Both images side by side at the same height, with match lines drawn across them. */
+/** Both images side by side at the same height, centred in the available area, with match lines across them. */
 function PairView({
   a,
   b,
@@ -361,11 +384,11 @@ function PairView({
   showLines: boolean
 }) {
   const [element, setElement] = useState<HTMLDivElement | null>(null)
-  const [width, setWidth] = useState(0)
+  const [area, setArea] = useState({ width: 0, height: 0 })
   useEffect(() => {
     if (!element) return undefined
     const observer = new ResizeObserver(([entry]) => {
-      if (entry) setWidth(entry.contentRect.width)
+      if (entry) setArea({ width: entry.contentRect.width, height: entry.contentRect.height })
     })
     observer.observe(element)
     return () => {
@@ -373,7 +396,10 @@ function PairView({
     }
   }, [element])
 
-  const height = width > 0 ? (width - GAP) / (a.width / a.height + b.width / b.height) : 0
+  // The pair is as tall as the width allows, but never taller than the area it sits in.
+  const aspects = a.width / a.height + b.width / b.height
+  const height = area.width > 0 ? Math.min((area.width - GAP) / aspects, area.height) : 0
+  const width = height * aspects + GAP
   const scaleA = height / a.height
   const scaleB = height / b.height
   const offsetB = a.width * scaleA + GAP
@@ -410,9 +436,19 @@ function PairView({
   )
 
   return (
-    <Box ref={setElement} sx={{ position: 'relative', width: '100%', height: height || 240 }}>
+    <Box
+      ref={setElement}
+      sx={{
+        position: 'relative',
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
       {height > 0 && (
-        <>
+        <Box sx={{ position: 'relative', flex: '0 0 auto', width, height }}>
           <Box
             component="img"
             src={imageContentUrl(a.id)}
@@ -440,7 +476,7 @@ function PairView({
             }}
           />
           <CanvasLayer transform={{ scale: 1, x: 0, y: 0 }} size={{ width, height }} draw={draw} />
-        </>
+        </Box>
       )}
     </Box>
   )
@@ -461,7 +497,14 @@ function RatioHistogram({ result, ratio }: { result: MatchingResult; ratio: numb
   return (
     <Box
       aria-hidden
-      sx={{ height: 48, display: 'flex', alignItems: 'flex-end', gap: '1px', px: 0.75, mt: 0.5 }}
+      sx={{
+        height: 120,
+        display: 'flex',
+        alignItems: 'flex-end',
+        gap: '1px',
+        px: 0.75,
+        mt: 0.5,
+      }}
     >
       {bins.map((b, i) => {
         const active = i / RATIO_BINS < ratio
@@ -492,7 +535,8 @@ function RatioHistogram({ result, ratio }: { result: MatchingResult; ratio: numb
   )
 }
 
-function ResultCard({
+/** Counts, the homography and the recovered motion, in a strip under the image pair. */
+function ResultStrip({
   result,
   ratio,
   ransac,
@@ -505,8 +549,24 @@ function ResultCard({
   const inliers = shown.filter((m) => m.inlier).length
   const h = result.homography
   return (
-    <Section title="Result">
-      <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 1.5 }}>
+    <Paper
+      variant="outlined"
+      component="section"
+      aria-label="Matching result"
+      sx={{
+        flex: '0 0 auto',
+        px: 2,
+        pt: 1.25,
+        pb: 1.75,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 1.25,
+      }}
+    >
+      <Typography variant="overline" component="h2" color="text.secondary" sx={{ lineHeight: 1.5 }}>
+        Result
+      </Typography>
+      <Box sx={{ display: 'flex', flexWrap: 'nowrap', alignItems: 'stretch', gap: 2 }}>
         <Tile label="Matches shown" value={String(shown.length)} />
         <Tile
           label="Inliers"
@@ -516,52 +576,77 @@ function ResultCard({
               : '—'
           }
         />
+        {ransac && h && (
+          <>
+            <Box
+              sx={{
+                flex: '0 0 auto',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                gap: 0.75,
+              }}
+            >
+              <Typography variant="caption" color="text.secondary">
+                Homography H (A → B)
+              </Typography>
+              <Box
+                sx={{
+                  width: 300,
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
+                  gap: 0.5,
+                  px: 1.25,
+                  py: 1,
+                  borderRadius: 1,
+                  bgcolor: '#0f1218',
+                  border: 1,
+                  borderColor: 'divider',
+                  fontFamily: monoFontFamily,
+                  fontSize: 13,
+                  color: '#cfe0ff',
+                  textAlign: 'right',
+                }}
+              >
+                {h.map((v, i) => (
+                  <span key={['h00', 'h01', 'h02', 'h10', 'h11', 'h12', 'h20', 'h21', 'h22'][i]}>
+                    {i === 2 || i === 5 ? v.toFixed(1) : v.toFixed(3)}
+                  </span>
+                ))}
+              </Box>
+            </Box>
+            <Box
+              sx={{
+                flex: '1 1 0',
+                minWidth: 0,
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                gap: 0.5,
+              }}
+            >
+              <Typography sx={{ fontSize: 13 }}>
+                Recovered rotation{' '}
+                <Box component="span" sx={{ fontFamily: monoFontFamily }}>
+                  {result.rotationDegrees?.toFixed(2)}°
+                </Box>
+              </Typography>
+              <Typography sx={{ fontSize: 13 }}>
+                Recovered scale{' '}
+                <Box component="span" sx={{ fontFamily: monoFontFamily }}>
+                  {result.scale?.toFixed(4)}
+                </Box>
+              </Typography>
+            </Box>
+          </>
+        )}
+        {ransac && !h && (
+          <Typography color="text.secondary" sx={{ alignSelf: 'center' }}>
+            No homography could be estimated from these matches.
+          </Typography>
+        )}
       </Box>
-      {ransac && h && (
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-          <Typography variant="caption" color="text.secondary">
-            Homography H (A → B)
-          </Typography>
-          <Box
-            sx={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
-              gap: 0.5,
-              p: 1.25,
-              borderRadius: 1,
-              bgcolor: '#0f1218',
-              border: 1,
-              borderColor: 'divider',
-              fontFamily: monoFontFamily,
-              fontSize: 13,
-              color: '#cfe0ff',
-              textAlign: 'right',
-            }}
-          >
-            {h.map((v, i) => (
-              <span key={['h00', 'h01', 'h02', 'h10', 'h11', 'h12', 'h20', 'h21', 'h22'][i]}>
-                {i === 2 || i === 5 ? v.toFixed(1) : v.toFixed(3)}
-              </span>
-            ))}
-          </Box>
-          <Typography sx={{ fontSize: 13 }}>
-            Recovered rotation{' '}
-            <Box component="span" sx={{ fontFamily: monoFontFamily }}>
-              {result.rotationDegrees?.toFixed(2)}°
-            </Box>
-            , scale{' '}
-            <Box component="span" sx={{ fontFamily: monoFontFamily }}>
-              {result.scale?.toFixed(4)}
-            </Box>
-          </Typography>
-        </Box>
-      )}
-      {ransac && !h && (
-        <Typography color="text.secondary">
-          No homography could be estimated from these matches.
-        </Typography>
-      )}
-    </Section>
+    </Paper>
   )
 }
 
@@ -569,11 +654,14 @@ function Tile({ label, value }: { label: string; value: string }) {
   return (
     <Box
       sx={{
-        p: 1.5,
+        flex: '0 0 150px',
+        px: 1.5,
+        py: 1.25,
         borderRadius: 1,
         bgcolor: '#1e222b',
         display: 'flex',
         flexDirection: 'column',
+        justifyContent: 'center',
         gap: 0.5,
       }}
     >

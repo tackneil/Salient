@@ -112,7 +112,7 @@ export function ParameterForm({ fields, values, onChange, above, disabled }: Par
 }
 
 /** A small "i" that carries a parameter's explanation, so slider rows stay one line tall. */
-function InfoHint({ text }: { text: string }) {
+export function InfoHint({ text }: { text: string }) {
   return (
     <Tooltip title={text}>
       <Box
