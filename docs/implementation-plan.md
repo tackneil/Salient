@@ -7,7 +7,7 @@ This plan turns the accepted ADRs (`docs/adr/`) and the design mockup ("Salient 
 > - ADR-0009 replaced ImageSharp with SkiaSharp;
 > - ADR-0011 moved from Node 22 to Node 24 and chose ESLint over oxlint.
 >
-> The CI workflow exists but has not run: there is no remote yet.
+> There is no CI (ADR-0016); the checks run locally.
 
 ## Milestones
 
@@ -28,10 +28,9 @@ This plan turns the accepted ADRs (`docs/adr/`) and the design mockup ("Salient 
 - Create `Salient.slnx` with every project from ADR-0002, including empty test projects and `benchmarks/Salient.Benchmarks`.
 - Scaffold `web/` with Vite (React + TypeScript), MUI, ESLint and Prettier.
 - Add the architecture test enforcing the project dependency rules.
-- Set up the GitHub Actions workflow: build, test, and the web lint, typecheck and build steps.
 - Add `LICENSE` (MIT) and a README stub.
 
-**Done when** `dotnet build` and `dotnet test` pass with zero warnings, `npm run build` passes in `web/`, and CI is green on the first push.
+**Done when** `dotnet build` and `dotnet test` pass with zero warnings, `npm run build` passes in `web/`.
 
 ## Phase 1 — Core image primitives (`Salient.Core`)
 
@@ -86,7 +85,7 @@ One class per stage, matching the stage ids in ADR-0004.
 - Golden tests (`Category=Golden`): keypoint repeatability ≥ 85% versus OpenCV, and inlier ratio ≥ 90% on a synthetic homography pair.
 - Expose per-keypoint debug data for the inspector: the orientation histogram and the descriptor.
 
-**Done when** the golden tests pass locally and in CI. **This completes milestone M1.**
+**Done when** the golden tests pass locally. **This completes milestone M1.**
 
 ## Phase 4 — Matching (`Salient.Matching`)
 
@@ -140,7 +139,7 @@ One class per stage, matching the stage ids in ADR-0004.
 **Tasks**
 - MUI theme from the mockup: colors, Inter and JetBrains Mono, shape, component overrides, dark-first.
 - App shell: app bar with navigation, Live connection indicator and the upload action. Routes from ADR-0011.
-- Generated API client (`npm run api:generate`) and the TanStack Query setup. A CI drift check fails if the committed client is out of date.
+- Generated API client (`npm run api:generate`) and the TanStack Query setup.
 - `useRunProgress(runId)` hook over SignalR, updating the query cache.
 - Shared components:
   - `ImageStage` (zoom and pan with layered rendering);
@@ -179,7 +178,7 @@ Build each view to match its artboard in the mockup.
 - Performance pass: profile a 1 MP run and hit the target in ADR-0009 or record the actual numbers.
 - `README.md` with screenshots, the architecture overview, how to run and a link to the coursework origin. Add `THIRD-PARTY-NOTICES.md`.
 
-**Done when** `docker compose up` gives a working app on a clean machine and CI builds the image. **This completes milestone M4.**
+**Done when** `docker compose up` gives a working app on a clean machine and the image builds. **This completes milestone M4.**
 
 ---
 

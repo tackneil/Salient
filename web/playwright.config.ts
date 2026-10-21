@@ -12,7 +12,7 @@ export default defineConfig({
   expect: { timeout: 30_000 },
   fullyParallel: false,
   workers: 1,
-  reporter: process.env.CI ? 'github' : 'list',
+  reporter: 'list',
   use: {
     baseURL: 'http://localhost:5173',
     viewport: { width: 1440, height: 900 },
@@ -36,14 +36,14 @@ export default defineConfig({
     {
       command: 'dotnet run --project ../src/Salient.Api --launch-profile http',
       url: 'http://localhost:5139/health',
-      reuseExistingServer: !process.env.CI,
+      reuseExistingServer: true,
       timeout: 240_000,
       env: { Salient__StorageRoot: storage, Salient__JobsPerMinutePerClient: '1000' },
     },
     {
       command: 'npm run dev -- --port 5173 --strictPort',
       url: 'http://localhost:5173',
-      reuseExistingServer: !process.env.CI,
+      reuseExistingServer: true,
       timeout: 60_000,
     },
   ],

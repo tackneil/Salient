@@ -30,9 +30,7 @@ Bugs like these are invisible in screenshots. They are only caught by tests that
 - Vitest and React Testing Library for components and hooks: the parameter form generated from a schema, the hit-testing grid, the zoom math.
 - Playwright for two or three end-to-end flows: upload, run and inspect a keypoint; match a pair; run a short sweep.
 
-**CI:**
-- Every push: all backend tests, including golden tests (CI runs on Linux with OpenCV runtime binaries), plus Vitest.
-- Pull requests to `master`: the Playwright suite as well.
+**Runs:** all backend tests, including golden tests, plus Vitest and the Playwright suite, are run locally. (Dated 2026-10-21: there is no CI, see ADR-0016.)
 
 ## Consequences
 

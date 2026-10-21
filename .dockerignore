@@ -8,7 +8,6 @@ web/playwright-report/
 data/
 **/data/
 .git/
-.github/
 tests/
 benchmarks/
 docs/

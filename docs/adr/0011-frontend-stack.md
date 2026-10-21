@@ -35,5 +35,5 @@ The `ParameterForm` component renders algorithm settings from the JSON Schema in
 
 - One component library and one chart library keep the look consistent.
 - The design mockup (canvas artifact "Salient UI") is the visual spec. Colors and typography from it become MUI theme tokens.
-- The frontend targets Node.js 24 (Active LTS as of October 2026). It is pinned in `web/.nvmrc`, which CI reads.
+- The frontend targets Node.js 24 (Active LTS as of October 2026). It is pinned in `web/.nvmrc`.
 - Linting uses ESLint with typescript-eslint (`strictTypeChecked`), not the oxlint setup that create-vite 9 generates by default. Type-aware rules matter more here than lint speed.

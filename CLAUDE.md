@@ -4,7 +4,7 @@ Salient is a feature-detection lab: a pure C# SIFT implementation (rewritten fro
 
 - UI spec: the design mockup "Salient UI" — https://claude.ai/artifact/ELEMEwhtL9FsoABJ34DeDz (Main, Pipeline, Matching, Robustness and Compare artboards).
 - Decisions: `docs/adr/0001–0015` (index in `docs/adr/README.md`). Read the relevant ADR before changing architecture; amend it (with a dated note) when you deviate.
-- Plan and status: `docs/implementation-plan.md`. All phases 0–9 (milestones M1–M4) are done. CI (`.github/workflows/ci.yml`) has **never run**, because the repo has no remote.
+- Plan and status: `docs/implementation-plan.md`. All phases 0–9 (milestones M1–M4) are done. There is no CI (ADR-0016): run the checks locally.
 
 ## Working rules
 
@@ -53,7 +53,7 @@ npm run api:generate   # regenerate the TS client after API contract changes
 docker compose up --build   # production-like container on :8080, data in a volume
 ```
 
-After changing API contracts: build the API (it rewrites `web/openapi/Salient.Api.json`), run `npm run api:generate`, and commit both. CI checks both for drift.
+After changing API contracts: build the API (it rewrites `web/openapi/Salient.Api.json`), run `npm run api:generate`, and commit both. Nothing checks them for drift automatically.
 
 ## Invariants (don't break silently)
 

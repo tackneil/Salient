@@ -13,12 +13,7 @@ Consistent conventions keep a solo portfolio project readable and make it easy f
 - **License:** MIT. Third-party licenses (SkiaSharp, OpenCV, OpenCvSharp, MUI) are listed in `THIRD-PARTY-NOTICES.md`.
 - **Branching:** `master` is always releasable. Work happens in short-lived branches merged through pull requests.
 - **Commits:** Conventional Commits (`feat:`, `fix:`, `refactor:`, `test:`, `docs:`, `chore:`), with an optional scope (`feat(sift): ...`).
-- **CI:** GitHub Actions:
-  - `dotnet build` with warnings as errors;
-  - `dotnet test`;
-  - `npm ci`, `npm run lint`, `npm run typecheck`, `npm test`, `npm run build`;
-  - the API client drift check (ADR-0010);
-  - Docker image build on `master`.
+- **CI:** none (dated 2026-10-21, see ADR-0016). The checks are run locally.
 - **C# style:**
   - `.editorconfig` with nullable reference types enabled;
   - file-scoped namespaces;

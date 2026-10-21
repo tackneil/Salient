@@ -7,7 +7,7 @@
 
   <ItemGroup>
     <PackageReference Include="OpenCvSharp4" />
-    <!-- Native OpenCV for the build platform only; the Docker image and CI need just the Linux runtime. -->
+    <!-- Native OpenCV for the build platform only; the Docker image needs just the Linux runtime. -->
     <PackageReference Include="OpenCvSharp4.runtime.win" Condition="'$(OS)' == 'Windows_NT'" />
     <PackageReference Include="OpenCvSharp4.official.runtime.linux-x64.slim" Condition="'$(OS)' != 'Windows_NT'" />
   </ItemGroup>

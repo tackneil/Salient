@@ -18,4 +18,4 @@ The frontend and the backend share many types: algorithm descriptors, parameter 
 ## Consequences
 
 - A backend change that breaks the frontend fails at TypeScript compile time once the client is regenerated.
-- CI must check that the committed client matches the current API: it regenerates the client and fails on any diff.
+- The committed client must match the current API; regenerate it after every contract change. (Dated 2026-10-21: no CI enforces this, see ADR-0016.)
